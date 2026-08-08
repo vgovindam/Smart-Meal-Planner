@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Smart Meal Planner — High Protein, High Fiber, Weight Loss</title>
+<meta name="description" content="A weekly meal planner for weight loss: high protein, high fiber, calorie tracked, across Mediterranean, Indian, Pakistani, Thai, Italian, American, and Mexican cuisines." />
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#132238; --muted:#5f6b7a; --line:#e1e7ee;
+    --accent:#1f9d7c; --accent-ink:#0b5c46; --accent2:#0f5b83; --warn:#c2410c;
+    --ok-bg:#e8f7ef; --shadow:0 10px 30px rgba(17,24,39,.07); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1320px;margin:0 auto;padding:20px 20px 60px}
+  a{color:inherit}
+  button{font-family:inherit}
+
+  /* Header */
+  header.top{background:linear-gradient(135deg,#0f2438,#123a4f);color:#fff;border-radius:24px;padding:22px 24px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .logo{width:44px;height:44px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px}
+  .brand h1{margin:0;font-size:20px}
+  .brand p{margin:2px 0 0;color:#b9c9d8;font-size:13px}
+  .head-stats{display:flex;gap:10px;flex-wrap:wrap}
+  .head-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:8px 14px;min-width:96px}
+  .head-stat .num{font-weight:800;font-size:17px}
+  .head-stat .lbl{font-size:11px;color:#b9c9d8;text-transform:uppercase;letter-spacing:.05em}
+
+  /* Tabs */
+  nav.tabs{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap;background:#fff;padding:6px;border-radius:16px;border:1px solid var(--line);box-shadow:var(--shadow)}
+  nav.tabs button{flex:1;min-width:120px;border:0;background:transparent;padding:11px 14px;border-radius:12px;font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+  nav.tabs button.active{background:var(--accent);color:#fff}
+
+  .view{display:none}
+  .view.active{display:block}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+  .panel h2{margin:0 0 4px;font-size:20px}
+  .panel .sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+  /* Week nav */
+  .week-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .week-nav .range{font-weight:800;font-size:17px}
+  .week-nav .range small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+  .btn{border:0;border-radius:12px;padding:10px 15px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;font-size:13px}
+  .btn.secondary{background:#eaf2ff;color:#14325c}
+  .btn.ghost{background:#f1f4f8;color:var(--ink)}
+  .btn.small{padding:6px 10px;font-size:12px;border-radius:9px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Day cards */
+  .days{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .day-card{border:1px solid var(--line);border-radius:20px;padding:14px;background:#fff}
+  .day-card.today{border-color:var(--accent);box-shadow:0 0 0 3px rgba(31,157,124,.15)}
+  .day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .day-head .d{font-weight:800;font-size:15px}
+  .day-head .d small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+  .cuisine-pill{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:#eef8f6;color:var(--accent-ink);padding:5px 9px;border-radius:999px}
+  .meal-row{border:1px solid #edf1f5;border-radius:14px;padding:9px 10px;margin-bottom:8px;background:#fbfcfe}
+  .meal-row .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .meal-row .slot{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .meal-row .title{font-weight:700;font-size:13.5px;margin:2px 0 4px;line-height:1.3}
+  .meal-row .macros{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+  .meal-row .macros span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 7px}
+  .meal-row .title{cursor:pointer}
+  .meal-row .title:hover{color:var(--accent-ink);text-decoration:underline}
+  .meal-row .actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+  .eat-check{width:19px;height:19px;cursor:pointer;accent-color:var(--accent)}
+  .swap-btn{border:1px solid var(--line);background:#fff;border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:12px;color:var(--muted)}
+  .swap-btn:hover{background:#f1f4f8}
+  .day-total{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--accent-ink);padding:8px 10px;background:var(--ok-bg);border-radius:12px;margin-top:4px}
+
+  /* Recipes */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .search{flex:1;min-width:220px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);font-size:14px}
+  .filters{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{border:1px solid var(--line);background:#f7fafc;border-radius:999px;padding:8px 13px;font-weight:700;cursor:pointer;font-size:12.5px}
+  .chip.active{background:#102235;color:#fff;border-color:#102235}
+  .recipes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .rcard{border:1px solid var(--line);border-radius:20px;padding:16px;background:#fff;cursor:pointer}
+  .rcard:hover{border-color:var(--accent)}
+  .rcard h3{margin:8px 0 4px;font-size:16.5px}
+  .rcard .sub{color:var(--muted);font-size:12.5px;margin-bottom:8px}
+  .macro-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+  .macro-chip{font-size:11px;font-weight:700;border-radius:999px;padding:4px 9px;background:#f1f4f8}
+  .macro-chip.kcal{background:#fff1e6;color:#b45309}
+  .macro-chip.protein{background:#eaf2ff;color:#14325c}
+  .macro-chip.fiber{background:var(--ok-bg);color:var(--accent-ink)}
+  .macro-chip.time{background:#f3eefc;color:#5b3aa8}
+  .satiety{font-size:11px;font-weight:700;color:var(--accent-ink)}
+
+  /* Modal */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(10,20,30,.5);z-index:50;align-items:center;justify-content:center;padding:16px}
+  .modal-bg.open{display:flex}
+  .modal{background:#fff;border-radius:22px;max-width:640px;width:100%;max-height:86vh;overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+  .modal-close{border:0;background:#f1f4f8;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:16px}
+  .ing-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13.5px}
+  .ing-table td{padding:6px 4px;border-bottom:1px solid #f1f4f8}
+  .ing-table td.qty{font-weight:700;white-space:nowrap;width:90px;color:var(--accent-ink)}
+  .persons-stepper{display:flex;align-items:center;gap:8px;margin:10px 0}
+  .persons-stepper button{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:800;cursor:pointer}
+  .method-box{background:#f8fbfd;border:1px solid #e5edf3;border-radius:14px;padding:12px;margin-top:12px;font-size:13.5px;line-height:1.5}
+  .time-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .step-list{margin:8px 0 0;padding-left:20px;font-size:13.5px;line-height:1.6}
+  .step-list li{margin-bottom:8px}
+  .tip-box{background:#fff7ec;border:1px solid #fbe6c4;border-radius:14px;padding:12px;margin-top:12px;font-size:13px;line-height:1.5}
+  .tip-box b{color:#92400e}
+  .shortcut-box{background:#eef6ff;border:1px solid #d6e8fb;border-radius:14px;padding:12px;margin-top:10px;font-size:13px;line-height:1.5}
+  .shortcut-box b{color:#0f5b83}
+  .swap-list{display:grid;gap:8px;margin-top:12px;max-height:50vh;overflow:auto}
+  .swap-opt{border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .swap-opt:hover{border-color:var(--accent);background:#f8fbfd}
+  .swap-opt .name{font-weight:700;font-size:13.5px}
+  .swap-opt .tag{font-size:11px;color:var(--muted)}
+
+  /* Shopping */
+  .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .shop-section{border:1px solid var(--line);border-radius:18px;padding:14px}
+  .shop-section h3{margin:0 0 8px;font-size:14px}
+  .shop-item{display:flex;gap:9px;align-items:flex-start;padding:7px 6px;border-radius:10px}
+  .shop-item:hover{background:#f8fbfd}
+  .shop-item input{margin-top:3px;accent-color:var(--accent)}
+  .shop-item.checked label{text-decoration:line-through;color:var(--muted)}
+  .shop-item label{font-size:13.5px}
+  .shop-item .amt{font-weight:800;color:var(--accent-ink)}
+
+  /* Tracker */
+  .track-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px}
+  .track-card{border:1px solid var(--line);border-radius:18px;padding:16px}
+  .track-card .big{font-size:26px;font-weight:800}
+  .track-card .lbl{color:var(--muted);font-size:12.5px;margin-bottom:8px}
+  .bar-bg{height:10px;border-radius:999px;background:#eef1f5;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;background:var(--accent)}
+  .bar-fill.over{background:var(--warn)}
+  .week-bars{display:flex;align-items:flex-end;gap:8px;height:150px;margin-top:8px}
+  .week-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .week-bar{width:100%;background:var(--accent);border-radius:8px 8px 0 0;min-height:4px}
+  .week-bar.today{background:var(--accent2)}
+  .week-bar-col span{font-size:10px;color:var(--muted);margin-top:5px}
+
+  /* Settings */
+  .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+  .field input, .field select{width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);font-size:14px}
+  .stepper-row{display:flex;align-items:center;gap:10px}
+  .stepper-row button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:800;font-size:16px;cursor:pointer}
+  .stepper-row .val{font-size:20px;font-weight:800;min-width:36px;text-align:center}
+  .note{font-size:12.5px;color:var(--muted);line-height:1.5;background:#f8fbfd;border:1px solid #e5edf3;border-radius:12px;padding:10px 12px}
+  .calc-toggle{color:var(--accent-ink);font-weight:700;font-size:13px;cursor:pointer;background:none;border:0;padding:0;text-decoration:underline}
+  .calc-box{display:none;margin-top:12px;padding:14px;background:#f8fbfd;border:1px solid #e5edf3;border-radius:14px}
+  .calc-box.open{display:block}
+  .calc-result{margin-top:10px;font-size:13.5px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+
+  footer.disclaimer{margin-top:20px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+  @media (max-width:720px){.wrap{padding:12px}nav.tabs button{min-width:90px;font-size:12.5px}}
+  @media print{nav.tabs,.week-nav .btn,.toolbar,.modal-bg,footer.disclaimer{display:none!important}.panel{box-shadow:none;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">🥗</div>
+      <div>
+        <h1>Smart Meal Planner</h1>
+        <p>High protein • high fiber • calorie tracked • 7 cuisines</p>
+      </div>
+    </div>
+    <div class="head-stats">
+      <div class="head-stat"><div class="num" id="hsCalories">–</div><div class="lbl">Today kcal</div></div>
+      <div class="head-stat"><div class="num" id="hsProtein">–</div><div class="lbl">Protein g</div></div>
+      <div class="head-stat"><div class="num" id="hsFiber">–</div><div class="lbl">Fiber g</div></div>
+      <div class="head-stat"><div class="num" id="hsPersons">–</div><div class="lbl">Persons</div></div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-view="week" class="active">This Week</button>
+    <button data-view="recipes">Recipes</button>
+    <button data-view="shopping">Shopping List</button>
+    <button data-view="tracker">Tracker</button>
+    <button data-view="settings">Settings</button>
+  </nav>
+
+  <!-- THIS WEEK -->
+  <section class="view active" id="view-week">
+    <div class="panel">
+      <div class="week-nav">
+        <button class="btn ghost small" id="prevWeek">← Prev week</button>
+        <div class="range"><span id="weekRangeLabel"></span><small id="weekRangeSub"></small></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn secondary small" id="thisWeekBtn">This week</button>
+          <button class="btn small" id="nextWeek">Next week →</button>
+          <button class="btn ghost small" id="printWeek">Print</button>
+        </div>
+      </div>
+      <div class="days" id="daysContainer"></div>
+    </div>
+  </section>
+
+  <!-- RECIPES -->
+  <section class="view" id="view-recipes">
+    <div class="panel">
+      <h2>Recipe library</h2>
+      <div class="sub">Tap any card to see ingredients scaled to your household size, and full prep method.</div>
+      <div class="toolbar">
+        <input class="search" id="recipeSearch" placeholder="Search recipes or ingredients…" />
+      </div>
+      <div class="filters" id="cuisineFilters" style="margin-bottom:8px"></div>
+      <div class="filters" id="typeFilters" style="margin-bottom:16px"></div>
+      <div class="recipes" id="recipesContainer"></div>
+    </div>
+  </section>
+
+  <!-- SHOPPING -->
+  <section class="view" id="view-shopping">
+    <div class="panel">
+      <div class="week-nav">
+        <div>
+          <h2 style="margin:0">Shopping list</h2>
+          <div class="sub" style="margin:2px 0 0">For the week of <strong id="shopWeekLabel"></strong>, scaled for <strong id="shopPersonsLabel"></strong> people.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost small" id="shopResetBtn">Uncheck all</button>
+          <button class="btn small" id="shopCopyBtn">Copy list</button>
+        </div>
+      </div>
+      <div class="shop-grid" id="shopContainer"></div>
+    </div>
+  </section>
+
+  <!-- TRACKER -->
+  <section class="view" id="view-tracker">
+    <div class="panel">
+      <h2>Today's progress</h2>
+      <div class="sub" id="trackerDateLabel"></div>
+      <div class="track-grid">
+        <div class="track-card">
+          <div class="big" id="trackCalNum">0 / 0</div>
+          <div class="lbl">Calories (kcal)</div>
+          <div class="bar-bg"><div class="bar-fill" id="trackCalBar"></div></div>
+        </div>
+        <div class="track-card">
+          <div class="big" id="trackProtNum">0 / 0 g</div>
+          <div class="lbl">Protein</div>
+          <div class="bar-bg"><div class="bar-fill" id="trackProtBar"></div></div>
+        </div>
+        <div class="track-card">
+          <div class="big" id="trackFiberNum">0 / 0 g</div>
+          <div class="lbl">Fiber</div>
+          <div class="bar-bg"><div class="bar-fill" id="trackFiberBar"></div></div>
+        </div>
+      </div>
+      <div class="note" id="trackTip" style="margin-bottom:16px"></div>
+      <h2 style="font-size:16px">Planned calories this week</h2>
+      <div class="week-bars" id="weekBars"></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="view-settings">
+    <div class="panel">
+      <h2>Settings</h2>
+      <div class="sub">These control portion scaling and your daily targets on the Tracker tab.</div>
+      <div class="settings-grid">
+        <div>
+          <div class="field">
+            <label>Household size (persons)</label>
+            <div class="stepper-row">
+              <button id="personsMinus">−</button>
+              <div class="val" id="personsVal">1</div>
+              <button id="personsPlus">+</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="field">
+            <label>Daily calorie target</label>
+            <input type="number" id="calorieTarget" min="1200" max="3500" step="10" />
+          </div>
+          <button class="calc-toggle" id="calcToggle">Calculate a target for me →</button>
+          <div class="calc-box" id="calcBox">
+            <div class="settings-grid">
+              <div class="field"><label>Sex</label>
+                <select id="calcSex"><option value="male">Male</option><option value="female">Female</option></select>
+              </div>
+              <div class="field"><label>Age (years)</label><input type="number" id="calcAge" value="30" min="14" max="90" /></div>
+              <div class="field"><label>Height (cm)</label><input type="number" id="calcHeight" value="170" min="130" max="220" /></div>
+              <div class="field"><label>Weight (kg)</label><input type="number" id="calcWeight" value="80" min="35" max="250" /></div>
+              <div class="field"><label>Activity level</label>
+                <select id="calcActivity">
+                  <option value="1.2">Sedentary (little/no exercise)</option>
+                  <option value="1.375" selected>Light (1-3 days/week)</option>
+                  <option value="1.55">Moderate (3-5 days/week)</option>
+                  <option value="1.725">Active (6-7 days/week)</option>
+                </select>
+              </div>
+              <div class="field"><label>Weekly loss goal</label>
+                <select id="calcPace">
+                  <option value="500">Steady — ~0.5 kg/week</option>
+                  <option value="750" selected>Faster — ~0.75 kg/week</option>
+                  <option value="1000">Aggressive — ~1 kg/week (max recommended)</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn small" id="calcApply">Use this target</button>
+            <div class="calc-result" id="calcResult"></div>
+          </div>
+        </div>
+        <div>
+          <div class="field">
+            <label>Daily protein target (g)</label>
+            <input type="number" id="proteinTarget" min="60" max="300" step="5" />
+          </div>
+          <div class="field">
+            <label>Daily fiber target (g)</label>
+            <input type="number" id="fiberTarget" min="15" max="60" step="1" />
+          </div>
+        </div>
+      </div>
+      <div class="note">A ~500-1000 kcal/day deficit is the range generally considered both effective and sustainable for fat loss — larger deficits speed things up short-term but are harder to hold and can affect energy and muscle retention. This planner is general nutrition guidance, not medical advice; check with a doctor or dietitian before starting an aggressive deficit, especially if you have a medical condition.</div>
+      <div style="margin-top:16px">
+        <button class="btn ghost small" id="resetAllBtn">Reset all app data</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="disclaimer">Estimates only — calories, protein, and fiber are approximate per serving. Not medical or dietary advice.</footer>
+</div>
+
+<!-- Recipe detail modal -->
+<div class="modal-bg" id="recipeModalBg">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <span class="cuisine-pill" id="modalCuisine"></span>
+        <h2 id="modalTitle" style="margin:8px 0 2px"></h2>
+        <div class="sub" id="modalSub" style="margin:0"></div>
+      </div>
+      <button class="modal-close" id="modalCloseBtn">✕</button>
+    </div>
+    <div class="macro-row" id="modalMacros"></div>
+    <div class="time-row" id="modalTimes"></div>
+    <div class="satiety" id="modalSatiety"></div>
+    <div class="persons-stepper">
+      <span style="font-size:12.5px;color:var(--muted);font-weight:700">SERVINGS</span>
+      <button id="modalPersonsMinus">−</button>
+      <div class="val" id="modalPersonsVal">1</div>
+      <button id="modalPersonsPlus">+</button>
+    </div>
+    <table class="ing-table" id="modalIngredients"></table>
+    <div class="method-box">
+      <strong>Method</strong>
+      <ol class="step-list" id="modalSteps"></ol>
+    </div>
+    <div class="tip-box" id="modalTip"></div>
+    <div class="shortcut-box" id="modalShortcut"></div>
+  </div>
+</div>
+
+<!-- Swap modal -->
+<div class="modal-bg" id="swapModalBg">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h2 style="margin:0" id="swapTitle">Swap meal</h2><div class="sub" style="margin:4px 0 0">Pick a replacement — it stays swapped only for this day.</div></div>
+      <button class="modal-close" id="swapCloseBtn">✕</button>
+    </div>
+    <input class="search" id="swapSearch" placeholder="Search…" style="margin-top:10px" />
+    <div class="swap-list" id="swapList"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DATA
+========================================================= */
+const CUISINES = ['Mediterranean','Indian','Pakistani','Thai','Italian','American','Mexican'];
+
+function ing(qty, unit, name, cat){ return {qty, unit, name, cat}; }
+// r() builds a full recipe object with sensible defaults so every entry below stays short.
+function r(o){ return Object.assign({ marinateTime:0, shortcut:null }, o); }
+
+// ---- Breakfasts: two variants (A/B) per cuisine, alternate week to week ----
+const BREAKFASTS = {
+  Mediterranean: {
+    A: r({id:'b-med-a', title:'Greek Yogurt Power Bowl', kcal:360, protein:30, fiber:7, carbs:38, fat:10, satiety:'High', prepTime:5, cookTime:0,
+      ingredients:[ing(1,'cup','Plain Greek yogurt','Dairy'), ing(0.75,'cup','Mixed berries','Produce'), ing(1,'tbsp','Chia seeds','Pantry'), ing(1,'tbsp','Chopped walnuts','Pantry'), ing(1,'tsp','Honey','Pantry')],
+      steps:['Spoon Greek yogurt into a bowl.','Top with berries, chia seeds, and walnuts.','Finish with a light honey drizzle.'],
+      chefTip:'Let the chia seeds sit on top for a few minutes before eating — they soften slightly and add a pleasant texture.'}),
+    B: r({id:'b-med-b', title:'Turkish-Style Eggs (Menemen) with Toast', kcal:350, protein:26, fiber:6, carbs:28, fat:16, satiety:'High', prepTime:5, cookTime:12,
+      ingredients:[ing(2,'','Eggs','Protein'), ing(0.25,'cup','Egg whites','Protein'), ing(0.5,'cup','Diced tomato','Produce'), ing(0.33,'cup','Diced green bell pepper','Produce'), ing(2,'tbsp','Diced onion','Produce'), ing(1,'tbsp','Feta cheese','Dairy'), ing(1,'slice','Whole-wheat toast','Grains'), ing(1,'tsp','Olive oil','Pantry')],
+      steps:['Sauté onion and bell pepper in olive oil over medium heat until soft, 4–5 minutes.','Add tomato and cook down 5 minutes until it breaks into a light sauce.','Pour in beaten eggs and egg whites; stir gently and cook until just set but still soft.','Crumble feta over the top just before serving.','Serve with toast for scooping.'],
+      chefTip:'Keep the heat medium-low once the eggs go in and stir gently — menemen should be soft and a little wet, not firm scrambled eggs.',
+      shortcut:'Canned diced tomatoes work fine in place of fresh.'}) },
+  Indian: {
+    A: r({id:'b-ind-a', title:'Masala Egg White & Veggie Scramble + Toast', kcal:340, protein:32, fiber:6, carbs:30, fat:9, satiety:'High', prepTime:5, cookTime:8,
+      ingredients:[ing(1,'cup','Egg whites','Protein'), ing(1,'','Whole egg','Protein'), ing(0.25,'cup','Diced onion','Produce'), ing(0.25,'cup','Diced tomato','Produce'), ing(1,'cup','Spinach','Produce'), ing(0.25,'tsp','Turmeric','Spices'), ing(0.25,'tsp','Cumin','Spices'), ing(1,'slice','Whole-wheat toast','Grains')],
+      steps:['Sauté onion, tomato, and spinach with turmeric and cumin until softened, 4–5 minutes.','Add egg whites and whole egg; scramble over medium heat until just set.','Serve hot with toast.'],
+      chefTip:'Bloom the turmeric and cumin in the pan for 15–20 seconds before adding the vegetables — dry spices hit with heat first release much more flavor than added at the end.'}),
+    B: r({id:'b-ind-b', title:'Moong Dal Chilla (Lentil Crepes) with Peanut-Coconut Chutney', kcal:360, protein:24, fiber:8, carbs:40, fat:10, satiety:'High', prepTime:10, cookTime:10, marinateTime:120,
+      ingredients:[ing(0.75,'cup','Yellow moong dal (soaked) or instant chilla mix','Legumes'), ing(2,'tbsp','Diced onion','Produce'), ing(2,'tbsp','Diced tomato','Produce'), ing(0.5,'','Green chili, minced','Produce'), ing(0.25,'tsp','Cumin','Spices'), ing(2,'tbsp','Shredded coconut','Pantry'), ing(1,'tbsp','Roasted peanuts','Pantry'), ing(0.33,'cup','Plain yogurt (side)','Dairy')],
+      steps:['Soak moong dal at least 2 hours (or overnight), then blend with a little water into a smooth, thick batter — or use an instant moong dal/pesarattu mix to skip this step.','Stir chopped onion, tomato, green chili, and cumin into the batter.','Heat a griddle or non-stick pan, pour a ladle of batter, and spread thin like a crepe; drizzle a little oil around the edges.','Cook 2–3 minutes until the base is golden and crisp, then flip and cook 1 more minute.','Blend coconut, roasted peanuts, a spoon of yogurt, and a pinch of salt into a quick chutney.','Serve the chilla with chutney and the remaining yogurt on the side.'],
+      chefTip:'This is essentially pesarattu, an Andhra/Telangana breakfast staple — thin and crisp is the goal, so don’t overload the batter with add-ins or it won’t set properly.',
+      shortcut:'Instant moong dal / pesarattu mix (just add water) is widely sold at Indian grocery stores and is what a lot of home cooks reach for on busy mornings.'}) },
+  Pakistani: {
+    A: r({id:'b-pak-a', title:'Spiced Chicken Sausage & Egg Roti Wrap', kcal:380, protein:33, fiber:5, carbs:32, fat:13, satiety:'High', prepTime:5, cookTime:10,
+      ingredients:[ing(2,'','Eggs','Protein'), ing(2,'oz','Lean chicken breakfast sausage','Protein'), ing(2,'tbsp','Diced onion','Produce'), ing(1,'','Whole-wheat roti or tortilla','Grains'), ing(1,'tbsp','Chopped cilantro','Produce'), ing(0.5,'','Green chili, minced','Produce')],
+      steps:['Cook chicken sausage and onion in a pan over medium heat until browned, 4–5 minutes.','Add beaten eggs, chili, and cilantro; scramble until just set.','Warm the roti and roll the filling inside.'],
+      chefTip:'Warming the roti directly over a flame for a few seconds per side (if you have a gas burner) gives it a light char that tastes noticeably better than microwaving.'}),
+    B: r({id:'b-pak-b', title:'Chicken Kheema (Spiced Minced Chicken) with Roti', kcal:370, protein:32, fiber:5, carbs:28, fat:14, satiety:'High', prepTime:8, cookTime:15,
+      ingredients:[ing(4,'oz','Lean ground chicken or turkey','Protein'), ing(0.25,'cup','Diced onion','Produce'), ing(0.25,'cup','Diced tomato','Produce'), ing(1,'tsp','Ginger-garlic paste','Produce'), ing(0.5,'','Green chili, minced','Produce'), ing(0.5,'tsp','Garam masala','Spices'), ing(1,'','Egg (stirred in, optional)','Protein'), ing(1,'small','Whole-wheat roti','Grains')],
+      steps:['Sauté onion until translucent, add ginger-garlic paste and green chili, cook 1 minute.','Add ground meat, breaking it up, and cook until browned, 5–6 minutes.','Add tomato and garam masala; cook down until fairly dry and well-spiced, about 5 minutes.','Optionally make a well in the center, crack in an egg, and scramble it through for extra richness.','Serve with warm roti.'],
+      chefTip:'Kheema should end up fairly dry, not saucy — cook off the liquid so it holds together as a filling for the roti.',
+      shortcut:'Jarred ginger-garlic paste is what most South Asian households actually cook with day to day — completely standard practice, not a corner cut.'}) },
+  Thai: {
+    A: r({id:'b-thai-a', title:'Coconut-Mango Protein Smoothie Bowl', kcal:350, protein:28, fiber:7, carbs:42, fat:8, satiety:'Medium', prepTime:5, cookTime:0,
+      ingredients:[ing(1,'scoop','Vanilla protein powder','Protein'), ing(0.5,'cup','Light coconut milk','Pantry'), ing(0.75,'cup','Frozen mango','Produce'), ing(1,'tbsp','Chia seeds','Pantry'), ing(1,'tbsp','Unsweetened shredded coconut','Pantry')],
+      steps:['Blend protein powder, coconut milk, and frozen mango until thick and smooth.','Pour into a bowl and top with chia seeds and shredded coconut.'],
+      chefTip:'Use frozen (not fresh) mango — it’s what gives the smoothie a thick, scoopable texture without needing added ice, which would water it down.'}),
+    B: r({id:'b-thai-b', title:'Khai Jeow-Style Thai Omelet with Rice', kcal:360, protein:26, fiber:4, carbs:30, fat:16, satiety:'Medium', prepTime:5, cookTime:6,
+      ingredients:[ing(3,'','Eggs','Protein'), ing(1,'tsp','Soy sauce','Pantry'), ing(2,'tbsp','Chopped green onion','Produce'), ing(0.33,'cup','Cooked jasmine rice','Grains'), ing(1,'tsp','Sriracha or chili sauce (side)','Pantry')],
+      steps:['Beat eggs vigorously with soy sauce and green onion until frothy — real Thai omelet technique whips in a lot of air for a light, crispy result.','Heat a generous amount of oil in a small pan until very hot.','Pour in the egg mixture all at once; it should sizzle and puff immediately.','Cook 1–2 minutes until the bottom is golden and crispy, then fold or flip and cook 30 more seconds.','Serve over jasmine rice with chili sauce on the side.'],
+      chefTip:'The sizzle when the egg hits the pan is the sound of the crispy edges forming — if it doesn’t sizzle loudly, the oil wasn’t hot enough yet.'}) },
+  Italian: {
+    A: r({id:'b-ita-a', title:'Spinach & Feta Egg Muffins + Fruit', kcal:330, protein:27, fiber:6, carbs:26, fat:12, satiety:'High', prepTime:8, cookTime:18,
+      ingredients:[ing(3,'','Eggs','Protein'), ing(0.25,'cup','Egg whites','Protein'), ing(1,'cup','Chopped spinach','Produce'), ing(2,'tbsp','Feta cheese','Dairy'), ing(0.5,'cup','Cherry tomatoes','Produce'), ing(1,'small','Orange or apple','Produce')],
+      steps:['Whisk eggs and egg whites with spinach, feta, and halved cherry tomatoes.','Pour into a greased muffin tin and bake at 375°F for about 18 minutes, until set.','Let cool 2 minutes before removing; serve with fruit.'],
+      chefTip:'These freeze well — double the batch on a weekend and reheat individual muffins for a 60-second breakfast on busy mornings.'}),
+    B: r({id:'b-ita-b', title:'Ricotta & Berry Protein Bowl with Toasted Almonds', kcal:340, protein:26, fiber:5, carbs:30, fat:12, satiety:'High', prepTime:4, cookTime:0,
+      ingredients:[ing(0.75,'cup','Part-skim ricotta','Dairy'), ing(0.5,'cup','Mixed berries','Produce'), ing(1,'tbsp','Toasted sliced almonds','Pantry'), ing(1,'tsp','Honey','Pantry'), ing(1,'pinch','Cinnamon','Spices')],
+      steps:['Whip ricotta briefly with a fork until slightly smoother and lighter.','Top with berries, toasted almonds, a light honey drizzle, and a pinch of cinnamon.'],
+      chefTip:'Ricotta is an underused high-protein breakfast base in Italian cooking — traditionally used in sweet preparations exactly like this, not just savory ones.'}) },
+  American: {
+    A: r({id:'b-usa-a', title:'Oat Protein Pancakes + Berries', kcal:380, protein:30, fiber:6, carbs:45, fat:8, satiety:'High', prepTime:5, cookTime:10,
+      ingredients:[ing(0.5,'cup','Rolled oats','Grains'), ing(1,'scoop','Protein powder','Protein'), ing(1,'','Egg','Protein'), ing(0.25,'cup','Egg whites','Protein'), ing(0.5,'tsp','Baking powder','Pantry'), ing(0.5,'cup','Berries','Produce'), ing(2,'tbsp','Greek yogurt (topping)','Dairy')],
+      steps:['Blend oats, protein powder, eggs, and baking powder into a smooth batter.','Cook small pancakes on a lightly greased griddle, 2 minutes per side, until golden.','Top with Greek yogurt and berries.'],
+      chefTip:'Let the batter rest 5 minutes before cooking — the oats hydrate and the pancakes hold together noticeably better.'}),
+    B: r({id:'b-usa-b', title:'Turkey Sausage & Veggie Breakfast Hash', kcal:370, protein:30, fiber:6, carbs:28, fat:15, satiety:'High', prepTime:8, cookTime:15,
+      ingredients:[ing(3,'oz','Lean turkey breakfast sausage','Protein'), ing(0.5,'cup','Diced sweet potato','Produce'), ing(0.33,'cup','Diced bell pepper','Produce'), ing(0.25,'cup','Diced onion','Produce'), ing(1,'','Egg (fried, on top)','Protein')],
+      steps:['Microwave diced sweet potato 3–4 minutes to soften it before pan-cooking (skip this and just cook it longer in the pan if you prefer).','Brown turkey sausage in a pan, breaking it up, 5–6 minutes; set aside.','In the same pan, sauté sweet potato, bell pepper, and onion until browned and tender, 8–10 minutes.','Return sausage to the pan and toss together.','Top with a fried or over-easy egg.'],
+      chefTip:'Par-cooking the sweet potato in the microwave first is the single biggest time-saver for any home fries or hash — otherwise the outside burns before the inside softens.',
+      shortcut:'Pre-diced frozen sweet potato (sold specifically for hash/roasting) skips the chopping entirely.'}) },
+  Mexican: {
+    A: r({id:'b-mex-a', title:'Breakfast Burrito Bowl', kcal:370, protein:29, fiber:9, carbs:35, fat:12, satiety:'High', prepTime:5, cookTime:8,
+      ingredients:[ing(2,'','Eggs','Protein'), ing(0.5,'cup','Black beans','Legumes'), ing(3,'tbsp','Salsa','Pantry'), ing(0.25,'','Avocado','Produce'), ing(1,'small','Whole-wheat tortilla','Grains'), ing(1,'tbsp','Light shredded cheese','Dairy')],
+      steps:['Scramble the eggs in a lightly oiled pan until just set.','Warm the black beans in a small pan or the microwave.','Assemble eggs, beans, salsa, avocado, and cheese in a tortilla, or serve open-face in a bowl.'],
+      chefTip:'Canned black beans simmered 2 minutes with a pinch of cumin taste noticeably more “cooked” than beans straight from the can, for almost no extra effort.'}),
+    B: r({id:'b-mex-b', title:'Chilaquiles-Style Egg & Tortilla Skillet (Lighter)', kcal:380, protein:28, fiber:7, carbs:34, fat:16, satiety:'High', prepTime:5, cookTime:10,
+      ingredients:[ing(2,'','Eggs','Protein'), ing(1,'small','Corn tortilla, torn','Grains'), ing(0.33,'cup','Salsa verde or roja','Pantry'), ing(0.33,'cup','Black beans','Legumes'), ing(1,'tbsp','Light shredded cheese','Dairy'), ing(0.25,'','Avocado','Produce'), ing(1,'tbsp','Chopped cilantro','Produce')],
+      steps:['Lightly toast torn tortilla pieces in a dry pan until they start to crisp, 2–3 minutes (or bake at 400°F for 5 minutes instead of frying).','Add salsa to the pan and simmer 2–3 minutes until the tortilla pieces soften slightly but keep some bite.','Push everything to one side, crack in the eggs, and scramble or fry them in the same pan.','Combine, top with cheese, avocado, and cilantro; serve with black beans on the side.'],
+      chefTip:'The tortilla pieces should stay slightly chewy in the center, not turn to mush — that texture contrast is the whole point of chilaquiles.',
+      shortcut:'A small handful of lightly crushed store-bought tortilla chips can stand in for toasting your own tortilla pieces.'}) }
+};
+
+// ---- Lunches & dinners: three variants (A/B/C) per cuisine, rotate week to week ----
+const LUNCH_DINNER = {
+  Mediterranean: {
+    lunch: {
+      A: r({id:'l-med-a', title:'Greek Chicken & Lentil Bowl', kcal:500, protein:40, fiber:11, carbs:42, fat:14, satiety:'High', prepTime:10, cookTime:12, marinateTime:15,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(0.5,'cup','Cooked green or brown lentils','Legumes'), ing(0.5,'cup','Diced cucumber','Produce'), ing(0.5,'cup','Cherry tomatoes','Produce'), ing(2,'tbsp','Feta cheese','Dairy'), ing(1,'cup','Mixed greens','Produce'), ing(1,'tbsp','Lemon juice','Produce'), ing(1,'tsp','Olive oil','Pantry'), ing(0.5,'tsp','Dried oregano','Spices')],
+        steps:['Marinate chicken in olive oil, lemon juice, oregano, and a smashed garlic clove for at least 15 minutes.','Grill or pan-sear 5–6 minutes per side until charred and cooked through; rest 5 minutes before slicing.','Toss lentils, cucumber, tomatoes, and greens with a squeeze of lemon and a drizzle of olive oil.','Top with sliced chicken and crumbled feta.'],
+        chefTip:'A short, simple marinade is authentic here — Greek grilled chicken relies on good olive oil and lemon, not a long ingredient list.',
+        shortcut:'Pre-cooked, ready-to-eat lentil pouches skip the cooking step entirely and taste fine in a cold salad like this.'}),
+      B: r({id:'l-med-b', title:'Greek Salmon & Quinoa Salad', kcal:520, protein:38, fiber:10, carbs:42, fat:18, satiety:'High', prepTime:8, cookTime:10,
+        ingredients:[ing(5,'oz','Salmon fillet','Protein'), ing(0.5,'cup','Cooked quinoa','Grains'), ing(6,'','Kalamata olives','Pantry'), ing(0.5,'cup','Diced cucumber','Produce'), ing(2,'tbsp','Red onion','Produce'), ing(2,'tbsp','Feta cheese','Dairy'), ing(1,'tbsp','Lemon vinaigrette','Pantry')],
+        steps:['Season salmon with salt, pepper, and a little olive oil.','Pan-sear skin-down 4–5 minutes, flip, and cook 2–3 more minutes until just cooked through (or bake at 425°F for 10–12 minutes).','Toss cooked quinoa with cucumber, red onion, olives, and feta.','Whisk lemon juice, olive oil, and oregano for the vinaigrette; toss through the salad and top with salmon.'],
+        chefTip:'Don’t overcook the salmon — pull it when the center is just barely opaque; it keeps cooking a little after it’s off the heat.',
+        shortcut:'Pre-cooked quinoa pouches (90 seconds in the microwave) are an easy shortcut with no real flavor tradeoff.'}),
+      C: r({id:'l-med-c', title:'Greek White Bean & Grilled Chicken Salad', kcal:510, protein:40, fiber:12, carbs:40, fat:16, satiety:'High', prepTime:8, cookTime:12, marinateTime:15,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(0.5,'cup','Cannellini beans','Legumes'), ing(0.5,'cup','Roasted red pepper','Produce'), ing(2,'tbsp','Red onion','Produce'), ing(2,'tbsp','Chopped parsley','Produce'), ing(1,'tbsp','Lemon-olive oil dressing','Pantry'), ing(1,'tbsp','Feta cheese','Dairy')],
+        steps:['Marinate and grill chicken the same way as the other Mediterranean bowls — lemon, oregano, garlic, olive oil — 5–6 minutes per side.','Toss white beans, roasted red pepper, red onion, and parsley with lemon-olive oil dressing.','Top with sliced chicken and a light crumble of feta.'],
+        chefTip:'Roasted red peppers (jarred is fine) add a smoky sweetness that plain bell pepper doesn’t — worth keeping a jar on hand for Mediterranean cooking.',
+        shortcut:'Canned cannellini beans (rinsed well) and jarred roasted red peppers make this a 15-minute assembly meal.'}) },
+    dinner: {
+      A: r({id:'d-med-a', title:'Lemon Herb Chicken with Tzatziki & Roasted Eggplant', kcal:560, protein:42, fiber:10, carbs:38, fat:20, satiety:'High', prepTime:12, cookTime:25, marinateTime:20,
+        ingredients:[ing(6,'oz','Boneless chicken thigh','Protein'), ing(0.33,'cup','Greek yogurt (tzatziki)','Dairy'), ing(0.25,'cup','Grated cucumber','Produce'), ing(1,'cup','Cubed eggplant','Produce'), ing(0.5,'cup','Bell pepper','Produce'), ing(0.33,'cup','Cooked quinoa or basmati','Grains'), ing(1,'clove','Garlic','Produce'), ing(0.5,'','Lemon','Produce'), ing(1,'tsp','Olive oil','Pantry')],
+        steps:['Marinate chicken thighs in lemon juice, garlic, oregano, and olive oil for at least 20 minutes.','Toss eggplant and bell pepper in olive oil, salt, and pepper; roast at 425°F for 20–25 minutes until browned and tender, flipping once.','Grill or pan-sear the chicken 6–7 minutes per side until well browned and cooked through.','Grate cucumber, squeeze out the excess water, and mix with yogurt, garlic, dill, and a pinch of salt for tzatziki.','Plate chicken with roasted vegetables, a scoop of quinoa or rice, and a generous spoon of tzatziki.'],
+        chefTip:'Squeezing the water out of grated cucumber before mixing it into the yogurt is the difference between thick, restaurant-style tzatziki and a watery sauce.',
+        shortcut:'Store-bought tzatziki is genuinely good at most grocery stores and a reasonable place to save 5 minutes.'}),
+      B: r({id:'d-med-b', title:'Baked Salmon with Tahini Sauce & Broccoli', kcal:580, protein:40, fiber:9, carbs:30, fat:28, satiety:'High', prepTime:8, cookTime:18,
+        ingredients:[ing(6,'oz','Salmon fillet','Protein'), ing(1.5,'tbsp','Tahini','Pantry'), ing(1,'tbsp','Lemon juice','Produce'), ing(1.5,'cup','Broccoli','Produce'), ing(0.5,'cup','Cubed sweet potato','Produce'), ing(1,'clove','Garlic','Produce')],
+        steps:['Season salmon with salt and pepper; bake at 425°F for 12–15 minutes until just cooked through.','Whisk tahini, lemon juice, a minced garlic clove, and enough water to loosen it into a pourable sauce.','Roast broccoli and sweet potato at 425°F for 18–20 minutes until tender and lightly charred (can share the oven with the salmon for the last part of its cook time).','Plate salmon over the vegetables and spoon tahini sauce generously on top.'],
+        chefTip:'Tahini seizes up and turns clumpy when you first add lemon juice — keep whisking and adding water a little at a time and it’ll loosen back into a smooth sauce.'}),
+      C: r({id:'d-med-c', title:'Greek Chicken Meatballs with Cucumber-Tomato Salad', kcal:570, protein:42, fiber:6, carbs:24, fat:30, satiety:'High', prepTime:15, cookTime:12,
+        ingredients:[ing(6,'oz','Lean ground chicken or turkey','Protein'), ing(2,'tbsp','Grated onion','Produce'), ing(1,'clove','Garlic','Produce'), ing(0.5,'tsp','Dried oregano & mint','Spices'), ing(0.3,'','Egg (binder)','Protein'), ing(2,'tbsp','Whole-wheat breadcrumbs','Grains'), ing(1.5,'cup','Cucumber-tomato salad','Produce'), ing(2,'tbsp','Tzatziki','Dairy')],
+        steps:['Squeeze excess liquid out of the grated onion, then mix with ground meat, garlic, oregano, mint, a beaten egg, and breadcrumbs; season well.','Rest the mixture in the fridge 15 minutes if you have time — it firms up and holds together better.','Form into balls or small patties; pan-sear or grill 4–5 minutes per side until browned and cooked through.','Toss cucumber, tomato, red onion, olive oil, and lemon for the salad.','Serve meatballs over the salad with a dollop of tzatziki.'],
+        chefTip:'Squeezing the grated onion dry before mixing it in keeps the meatballs from turning mushy — a small step that’s easy to skip and shouldn’t be.',
+        shortcut:'Store-bought tzatziki earns its keep here too.'}) } },
+
+  Indian: {
+    lunch: {
+      A: r({id:'l-ind-a', title:'Tandoori Chicken with Kachumber Salad & Brown Rice', kcal:500, protein:42, fiber:8, carbs:38, fat:14, satiety:'High', prepTime:10, cookTime:14, marinateTime:30,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(0.33,'cup','Greek yogurt (marinade)','Dairy'), ing(1.5,'tsp','Tandoori masala','Spices'), ing(1,'tsp','Ginger-garlic paste','Produce'), ing(0.5,'','Lemon','Produce'), ing(0.5,'cup','Diced cucumber','Produce'), ing(0.5,'cup','Diced tomato','Produce'), ing(2,'tbsp','Red onion','Produce'), ing(0.5,'cup','Cooked brown rice','Grains')],
+        steps:['Whisk yogurt, ginger-garlic paste, tandoori masala, lemon juice, and a pinch of salt into a thick marinade.','Coat the chicken fully and marinate at least 30 minutes (2+ hours or overnight if planning ahead — the yogurt tenderizes as it sits, so longer really does taste better).','Grill, pan-sear, or broil 5–6 minutes per side until charred at the edges and cooked through.','Toss cucumber, tomato, and red onion with a pinch of chaat masala and lemon juice for a quick kachumber salad.','Rest the chicken 5 minutes before slicing, then serve over rice with the salad.'],
+        chefTip:'The char on the edges is real tandoori flavor — don’t be afraid of some blackened spots, especially if pan-searing; that’s the smoky flavor a tandoor gives for free.',
+        shortcut:'Store-bought tandoori masala paste (MDH, Shan, or similar) is what most Indian home cooks actually use — no need to build your own spice mix from scratch.'}),
+      B: r({id:'l-ind-b', title:'Hyderabadi-Style Vegetable Sambar Bowl', kcal:470, protein:26, fiber:15, carbs:58, fat:10, satiety:'High', prepTime:10, cookTime:15,
+        ingredients:[ing(0.75,'cup','Cooked toor dal (split pigeon peas)','Legumes'), ing(1,'cup','Mixed vegetables (drumstick, carrot, okra)','Produce'), ing(1,'tbsp','Tamarind paste','Pantry'), ing(1.5,'tsp','Sambar powder','Spices'), ing(0.25,'tsp','Mustard seeds','Spices'), ing(8,'','Curry leaves','Produce'), ing(1,'tsp','Ghee','Dairy'), ing(0.5,'cup','Cooked brown rice','Grains')],
+        steps:['Simmer cooked toor dal with mixed vegetables, tamarind paste, and sambar powder for 10 minutes until the vegetables are tender.','In a small pan, heat ghee, add mustard seeds and let them pop, then add curry leaves and a dried red chili if you have one.','Pour the tempering (tadka) over the simmering sambar and stir through.','Simmer 2 more minutes to let the tempering flavor infuse; adjust salt and tamarind to taste.','Serve hot over brown rice.'],
+        chefTip:'The tadka goes in at the end, sizzling — that final pop of mustard seeds and curry leaves is non-negotiable for real South Indian flavor, and it takes 60 seconds.',
+        shortcut:'Canned or pre-cooked toor dal plus a good store-bought sambar powder turns this into a 15-minute meal; frozen curry leaves (sold at Indian grocers) work almost as well as fresh.'}),
+      C: r({id:'l-ind-c', title:'Chicken Chettinad-Style Bowl', kcal:510, protein:44, fiber:9, carbs:34, fat:18, satiety:'High', prepTime:10, cookTime:20,
+        ingredients:[ing(5,'oz','Boneless chicken thigh','Protein'), ing(0.33,'cup','Onion','Produce'), ing(0.33,'cup','Tomato','Produce'), ing(1,'tsp','Ginger-garlic paste','Produce'), ing(1.5,'tsp','Chettinad spice mix (fennel, pepper, coriander, chili)','Spices'), ing(1,'tbsp','Grated coconut','Pantry'), ing(6,'','Curry leaves','Produce'), ing(0.33,'cup','Cooked brown rice','Grains')],
+        steps:['Dry roast fennel, black pepper, coriander seeds, and dried red chilies for 1 minute until fragrant, then grind coarsely (or use a store-bought Chettinad masala to skip this).','Sauté onion until golden, add ginger-garlic paste and curry leaves, cook 1 minute.','Add tomato and the ground spice mix, cook down 4–5 minutes until it forms a thick, dark paste.','Add chicken, coat well in the masala, cover and cook 12–15 minutes until tender, adding a splash of water if it looks dry.','Stir in grated coconut at the end for body; serve over rice.'],
+        chefTip:'Cooking the onion-tomato base until it’s genuinely dark and jammy — not just softened — is what gives Chettinad curries their deep flavor. Don’t rush that step.',
+        shortcut:'A store-bought Chettinad or ‘pepper chicken’ masala mix replaces the dry-roast-and-grind step entirely.'}) },
+    dinner: {
+      A: r({id:'d-ind-a', title:'Lighter Butter Chicken (Murgh Makhani) with Cauliflower Rice', kcal:560, protein:45, fiber:8, carbs:28, fat:26, satiety:'High', prepTime:10, cookTime:25, marinateTime:20,
+        ingredients:[ing(6,'oz','Chicken breast','Protein'), ing(0.25,'cup','Greek yogurt','Dairy'), ing(0.5,'cup','Tomato puree','Produce'), ing(1,'tsp','Butter','Dairy'), ing(1.5,'tsp','Garam masala','Spices'), ing(1,'tsp','Ginger-garlic paste','Produce'), ing(1,'cup','Cauliflower rice','Produce'), ing(2,'tbsp','Basmati rice','Grains')],
+        steps:['Marinate chicken in yogurt, ginger-garlic paste, and 1 tsp of the garam masala for at least 20 minutes.','Sear the marinated chicken in a hot pan until browned on the outside (it doesn’t need to cook through yet); set aside.','In the same pan, cook tomato puree with the remaining garam masala, a pinch of chili powder, and a touch of sugar for 8–10 minutes until it darkens and the raw tomato smell is gone.','Stir in the butter and return the chicken to the pan; simmer until cooked through, 6–8 minutes.','Finish with a swirl of yogurt off the heat for richness.','Serve over cauliflower rice with a small portion of basmati on the side.'],
+        chefTip:'Real depth here comes from cooking the tomato base properly, not from extra butter — you can use less fat than most recipes call for and still get a rich-tasting sauce if you’re patient with that step.',
+        shortcut:'A jarred makhani/butter chicken simmer sauce (look for a lower-sugar version) is a reasonable weeknight shortcut — sear your chicken fresh and finish it in the jarred sauce.'}),
+      B: r({id:'d-ind-b', title:'Tandoori Salmon with Palak (Spinach) Sauté', kcal:560, protein:40, fiber:9, carbs:30, fat:26, satiety:'High', prepTime:8, cookTime:14, marinateTime:15,
+        ingredients:[ing(6,'oz','Salmon fillet','Protein'), ing(2,'tbsp','Greek yogurt','Dairy'), ing(1,'tbsp','Tandoori masala','Spices'), ing(2,'cup','Spinach','Produce'), ing(1,'clove','Garlic','Produce'), ing(0.25,'tsp','Cumin seeds','Spices'), ing(0.33,'cup','Cooked brown rice','Grains')],
+        steps:['Mix yogurt, tandoori masala, and a squeeze of lemon; coat the salmon and let it sit 15–20 minutes.','Sear salmon skin-side down in a hot pan 4–5 minutes, then flip and finish 2–3 minutes (or bake at 425°F for 10–12 minutes).','Separately, temper cumin seeds in a little hot oil, add garlic, then wilt in the spinach 3–4 minutes.','Blend half the cooked spinach smooth for a classic saag texture, or leave it rustic — both are authentic.','Plate spinach with salmon on top, rice on the side.'],
+        chefTip:'Cumin tempered in hot oil first, before the garlic goes in, is the base flavor of almost every North Indian spinach dish — a 20-second step that makes a real difference.',
+        shortcut:'Frozen chopped spinach (thawed and squeezed dry) works just as well as fresh here and saves the washing and chopping.'}),
+      C: r({id:'d-ind-c', title:'Hyderabadi Chicken & Baingan (Eggplant) Curry', kcal:580, protein:42, fiber:10, carbs:30, fat:30, satiety:'High', prepTime:12, cookTime:25,
+        ingredients:[ing(6,'oz','Boneless chicken thigh','Protein'), ing(1,'cup','Cubed eggplant','Produce'), ing(2,'tbsp','Roasted peanuts','Pantry'), ing(1,'tbsp','Sesame seeds','Pantry'), ing(1,'tsp','Tamarind paste','Pantry'), ing(0.33,'cup','Onion','Produce'), ing(1,'tsp','Ginger-garlic paste','Produce'), ing(1,'tsp','Red chili powder & coriander','Spices'), ing(6,'','Curry leaves','Produce'), ing(0.33,'cup','Cooked brown rice or 1 small roti','Grains')],
+        steps:['Dry roast peanuts and sesame seeds separately until golden and fragrant, then grind into a coarse paste with a splash of water — this nutty paste is the signature of bagara baingan-style Hyderabadi curries.','Sear eggplant cubes in a little oil until lightly browned on the edges, 4–5 minutes; set aside.','Sauté onion until golden, add ginger-garlic paste and curry leaves, then the peanut-sesame paste, tamarind, and spices; cook 3–4 minutes until fragrant.','Add chicken, coat in the masala, cover and cook 10 minutes, then add the eggplant back in and cook 5 more minutes until everything is tender.','Adjust tamarind and salt to taste — it should be tangy, nutty, and a little spicy all at once.','Serve with rice or a small roti.'],
+        chefTip:'This peanut-sesame masala is the real base of Hyderabadi bagara baingan — once you’ve made it, you’ll recognize it as the flavor behind a lot of Andhra/Telangana cooking.',
+        shortcut:'Pre-roasted, unsalted peanuts (skip the roasting step) and store-bought tamarind concentrate both save real time without hurting the flavor much.'}) } },
+
+  Pakistani: {
+    lunch: {
+      A: r({id:'l-pak-a', title:'Chicken Seekh Kebab Bowl with Mint Chutney', kcal:500, protein:40, fiber:9, carbs:36, fat:16, satiety:'High', prepTime:12, cookTime:12,
+        ingredients:[ing(5,'oz','Lean ground chicken','Protein'), ing(2,'tbsp','Minced onion','Produce'), ing(2,'tbsp','Mint-cilantro chutney','Produce'), ing(0.5,'tsp','Cumin & coriander','Spices'), ing(0.5,'','Green chili, minced','Produce'), ing(0.5,'cup','Cucumber & tomato salad','Produce'), ing(0.33,'cup','Cooked brown rice','Grains')],
+        steps:['Mix ground chicken with minced onion, green chili, cumin, and coriander; knead briefly so it holds together.','Shape into small logs around skewers, or just form oval patties if you don’t have skewers.','Grill or pan-sear 5–6 minutes per side, turning gently, until browned and cooked through.','Serve over rice with a cucumber-tomato salad and mint chutney.'],
+        chefTip:'Wetting your hands before shaping the kebabs keeps the mixture from sticking and gives a smoother, more traditional finish.',
+        shortcut:'Store-bought mint-cilantro chutney is common even in households that cook everything else from scratch.'}),
+      B: r({id:'l-pak-b', title:'Chicken Tikka Whole-Wheat Wrap', kcal:490, protein:38, fiber:8, carbs:40, fat:14, satiety:'High', prepTime:10, cookTime:12, marinateTime:30,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(2,'tbsp','Greek yogurt (marinade)','Dairy'), ing(1,'tsp','Tikka masala spice blend','Spices'), ing(1,'','Whole-wheat wrap','Grains'), ing(1,'cup','Mixed salad greens','Produce'), ing(0.5,'cup','Cucumber & tomato','Produce'), ing(2,'tbsp','Greek yogurt sauce','Dairy')],
+        steps:['Mix yogurt with tikka masala spice blend; coat the chicken and marinate at least 30 minutes.','Grill or pan-sear 5–6 minutes per side until charred and cooked through.','Slice the chicken and fill a warmed wrap with chicken, salad greens, cucumber, tomato, and yogurt sauce.'],
+        chefTip:'A hot, dry cast-iron or grill pan gets you real char marks that mimic tandoor cooking — don’t crowd the pan or the chicken will steam instead.'}),
+      C: r({id:'l-pak-c', title:'Chicken Malai Boti Bowl with Mint Chutney & Rice', kcal:520, protein:42, fiber:7, carbs:36, fat:20, satiety:'High', prepTime:10, cookTime:12, marinateTime:30,
+        ingredients:[ing(5,'oz','Chicken breast or thigh','Protein'), ing(0.33,'cup','Greek yogurt (marinade)','Dairy'), ing(1,'tbsp','Light cream or extra yogurt','Dairy'), ing(2,'','Green cardamom pods','Spices'), ing(0.25,'tsp','White pepper','Spices'), ing(1,'tsp','Ginger-garlic paste','Produce'), ing(2,'tbsp','Mint chutney','Produce'), ing(0.33,'cup','Cooked brown rice','Grains')],
+        steps:['Whisk yogurt, ginger-garlic paste, crushed cardamom, white pepper, and a touch of cream into a smooth marinade.','Marinate chicken at least 30 minutes — overnight for best results, since malai boti depends on a long, gentle marinade.','Grill or broil until charred at the edges and cooked through, basting once with extra marinade halfway.','Rest 5 minutes, then slice; serve over rice with mint chutney and a lemon wedge.'],
+        chefTip:'White pepper and cardamom, not chili, are the backbone of malai boti — it’s meant to be mellow and creamy rather than fiery, a nice contrast if the rest of your week leans heavy on chili heat.',
+        shortcut:'A store-bought malai boti marinade paste works well; just add your own fresh ginger-garlic and yogurt to it.'}) },
+    dinner: {
+      A: r({id:'d-pak-a', title:'Chicken Karahi (Lighter) with Masoor Daal', kcal:570, protein:44, fiber:11, carbs:34, fat:24, satiety:'High', prepTime:10, cookTime:22,
+        ingredients:[ing(6,'oz','Boneless chicken thigh','Protein'), ing(0.5,'cup','Tomato','Produce'), ing(1,'tbsp','Ginger-garlic paste','Produce'), ing(1,'','Green chili','Produce'), ing(0.5,'cup','Cooked red lentils (masoor daal)','Legumes'), ing(1,'small','Whole-wheat roti','Grains')],
+        steps:['Cook chopped tomato with ginger-garlic paste and green chili over medium-high heat, mashing it down into a rough sauce, 5–6 minutes.','Add chicken and coat well in the tomato masala; cover and cook 12–15 minutes, stirring occasionally, until tender and the oil starts to separate at the edges.','Warm the red lentils in a separate small pot.','Serve chicken karahi with the lentil daal and a small roti.'],
+        chefTip:'Cooking karahi in a wide, shallow pan (not a deep pot) helps the liquid reduce fast, which is what gives it that slightly dry, clinging masala instead of a thin curry.'}),
+      B: r({id:'d-pak-b', title:'Grilled Masala Fish with Lentil Daal & Cucumber Salad', kcal:550, protein:42, fiber:12, carbs:32, fat:22, satiety:'High', prepTime:10, cookTime:12, marinateTime:15,
+        ingredients:[ing(6,'oz','White fish or salmon fillet','Protein'), ing(1,'tbsp','Masala spice rub','Spices'), ing(0.5,'cup','Cooked red lentils','Legumes'), ing(1,'cup','Cucumber & onion salad','Produce'), ing(0.5,'','Lemon','Produce')],
+        steps:['Rub the fish all over with masala spice rub and a squeeze of lemon; let sit 15 minutes if you have time.','Grill or pan-sear 3–4 minutes per side depending on thickness, until just cooked through.','Warm the lentils and toss cucumber and onion with a pinch of salt and lemon for a quick salad.','Serve fish with daal and cucumber salad.'],
+        chefTip:'Fish overcooks fast — pull it the moment it flakes easily with a fork, since it keeps cooking a little after leaving the heat.'}),
+      C: r({id:'d-pak-c', title:'Chicken Handi (Home-Style Curry) with Roti', kcal:570, protein:45, fiber:9, carbs:32, fat:24, satiety:'High', prepTime:10, cookTime:28,
+        ingredients:[ing(6,'oz','Boneless chicken thigh','Protein'), ing(2,'tbsp','Greek yogurt','Dairy'), ing(0.5,'cup','Onion','Produce'), ing(0.33,'cup','Tomato','Produce'), ing(1,'tsp','Ginger-garlic paste','Produce'), ing(1,'pinch','Whole spices (cinnamon, cloves, cardamom)','Spices'), ing(0.5,'tsp','Garam masala','Spices'), ing(1,'tsp','Coriander & cumin','Spices'), ing(1,'small','Whole-wheat roti','Grains')],
+        steps:['Sauté whole spices in oil for 30 seconds until fragrant, then add onion and cook until deep golden brown, 8–10 minutes — don’t rush this, it’s the base of the whole dish.','Add ginger-garlic paste, cook 1 minute, then tomato and ground spices; cook down until the oil starts to separate at the edges, another 5–6 minutes.','Add chicken and yogurt, stir well to coat, cover and simmer 15 minutes until tender and the sauce has thickened.','Finish with a sprinkle of garam masala and fresh cilantro; serve with a small roti.'],
+        chefTip:'Patience with the onions is the whole secret to a good handi — rushing that step is the most common reason home versions taste thinner than restaurant ones.',
+        shortcut:'Frozen store-bought caramelized/fried onions (sold as ‘birista’ at South Asian grocers) skip the longest step here and are a genuine time-saver.'}) } },
+
+  Thai: {
+    lunch: {
+      A: r({id:'l-thai-a', title:'Thai Larb-Style Chicken Salad', kcal:480, protein:38, fiber:8, carbs:28, fat:18, satiety:'High', prepTime:15, cookTime:10,
+        ingredients:[ing(5,'oz','Ground chicken','Protein'), ing(1,'tbsp','Raw rice (for toasting)','Pantry'), ing(1.5,'tbsp','Lime juice','Produce'), ing(1,'tbsp','Soy sauce','Pantry'), ing(1,'clove','Garlic, minced','Produce'), ing(2,'tbsp','Sliced shallot','Produce'), ing(0.25,'tsp','Chili flakes','Spices'), ing(1.5,'cup','Shredded cabbage','Produce'), ing(2,'tbsp','Mint & cilantro','Produce')],
+        steps:['Toast raw rice in a dry pan until golden, 3–4 minutes, then crush into a coarse powder — this "khao khua" gives larb its signature nutty crunch; don’t skip it.','Cook ground chicken in a hot, dry pan over medium-high heat, breaking it up, 6–7 minutes until just cooked through.','Off the heat, toss the hot chicken with lime juice, soy sauce, garlic, shallot, and chili flakes — the residual heat "cooks" the aromatics without turning them bitter.','Fold in the toasted rice powder, mint, and cilantro right before serving so the herbs stay bright.','Serve over shredded cabbage with extra lime wedges.'],
+        chefTip:'Toasted rice powder is what makes this taste like real larb, not just lime chicken — it’s the one non-negotiable step, and no fish sauce is needed to get there.',
+        shortcut:'Pre-minced garlic and bottled lime juice are fine time-savers; the toasted rice powder needs to be homemade, but it only takes 5 minutes.'}),
+      B: r({id:'l-thai-b', title:'Thai Shrimp & Veggie Bowl with Peanut Sauce', kcal:470, protein:36, fiber:8, carbs:38, fat:14, satiety:'Medium', prepTime:10, cookTime:10,
+        ingredients:[ing(6,'oz','Shrimp','Protein'), ing(0.33,'cup','Cooked jasmine rice','Grains'), ing(1,'cup','Broccoli','Produce'), ing(0.5,'cup','Bell pepper','Produce'), ing(1.5,'tbsp','Peanut butter','Pantry'), ing(1,'tbsp','Soy sauce','Pantry'), ing(1,'tsp','Lime juice','Produce')],
+        steps:['Pat shrimp dry and toss with a pinch of salt, garlic powder, and white pepper.','Sear shrimp in a hot pan with a little oil, about 90 seconds per side, then set aside — don’t crowd the pan or they’ll steam instead of sear.','Stir-fry broccoli and bell pepper in the same pan 3–4 minutes until just tender-crisp.','Whisk peanut butter, soy sauce, lime juice, and a splash of warm water into a quick peanut sauce.','Toss shrimp and vegetables with the sauce; serve over jasmine rice.'],
+        chefTip:'Cook the shrimp first and pull them out — they finish in seconds and turn rubbery if left in the pan with the vegetables.',
+        shortcut:'A good bottled Thai peanut sauce (check the label for low added sugar) is a fair swap for the quick homemade one.'}),
+      C: r({id:'l-thai-c', title:'Tom Yum-Style Shrimp & Mushroom Soup Bowl', kcal:430, protein:34, fiber:6, carbs:32, fat:12, satiety:'High', prepTime:10, cookTime:12,
+        ingredients:[ing(6,'oz','Shrimp','Protein'), ing(1,'cup','Sliced mushrooms','Produce'), ing(1,'stalk','Lemongrass (or 1 tbsp paste)','Produce'), ing(1,'tsp','Grated ginger','Produce'), ing(2,'','Red chilies, sliced','Produce'), ing(1,'tsp','Tomato paste','Pantry'), ing(1.5,'tbsp','Lime juice','Produce'), ing(1,'tbsp','Soy sauce','Pantry'), ing(0.5,'cup','Cherry tomatoes','Produce'), ing(0.33,'cup','Cooked jasmine rice','Grains')],
+        steps:['Sauté sliced chilies, garlic, and tomato paste in a touch of oil for 1 minute to build a fragrant red base.','Add lemongrass, ginger, and 2 cups water or light broth; simmer 5 minutes to build the aromatic broth.','Add mushrooms and cherry tomatoes, simmer 3–4 minutes.','Add shrimp and cook just until opaque, about 2 minutes, then pull the pot off the heat immediately.','Season off the heat with lime juice and soy sauce — adding the sour and salty notes off-heat keeps the broth bright instead of muddy.','Ladle over a small scoop of jasmine rice.'],
+        chefTip:'Seasoning with lime and soy at the very end, off the heat, is the difference between a bright tom-yum-style broth and a flat one.',
+        shortcut:'Frozen or jarred lemongrass paste saves real time over prepping fresh stalks.'}) },
+    dinner: {
+      A: r({id:'d-thai-a', title:'Thai Basil Chicken (Lighter Pad Krapow)', kcal:560, protein:44, fiber:8, carbs:34, fat:24, satiety:'High', prepTime:10, cookTime:10,
+        ingredients:[ing(6,'oz','Ground chicken','Protein'), ing(0.5,'cup','Thai basil','Produce'), ing(3,'','Garlic cloves','Produce'), ing(2,'','Thai chilies (or to taste)','Produce'), ing(1,'tbsp','Soy sauce','Pantry'), ing(0.5,'tsp','Sugar','Pantry'), ing(1,'cup','Green beans','Produce'), ing(0.33,'cup','Cooked jasmine rice','Grains')],
+        steps:['Mince or pulse garlic and Thai chilies together — adjust the chili count to your heat preference, most recipes underestimate it.','Heat oil in a wok or wide pan until just smoking, add the garlic-chili paste, and stir 20–30 seconds until fragrant but not browned.','Add ground chicken, break it up, and cook over high heat 5–6 minutes until browned and any liquid has evaporated.','Season with soy sauce and sugar to balance; toss in green beans for the last 2 minutes.','Off the heat, fold in a big handful of Thai basil just until wilted.','Serve over jasmine rice.'],
+        chefTip:'Everything moves fast once the chicken hits the pan — have all ingredients prepped and next to the stove before you start; this is a 10-minute cook, not a recipe to prep as you go.',
+        shortcut:'Pre-minced garlic-chili paste (sold as ‘Thai stir-fry paste’ in some stores) is a fine shortcut; Thai basil itself is worth seeking out, but regular basil plus extra cilantro and mint works in a pinch.'}),
+      B: r({id:'d-thai-b', title:'Coconut Curry Shrimp (Light, No Fish Sauce)', kcal:560, protein:40, fiber:8, carbs:32, fat:26, satiety:'High', prepTime:10, cookTime:15,
+        ingredients:[ing(6,'oz','Shrimp','Protein'), ing(0.5,'cup','Light coconut milk','Pantry'), ing(2,'','Garlic cloves','Produce'), ing(2,'tbsp','Diced shallot or onion','Produce'), ing(1,'tsp','Grated ginger','Produce'), ing(1,'','Red chili','Produce'), ing(0.5,'tsp','Ground coriander','Spices'), ing(0.25,'tsp','Turmeric','Spices'), ing(1.5,'cup','Bell pepper & spinach','Produce'), ing(0.33,'cup','Cooked jasmine rice','Grains')],
+        steps:['Blend garlic, shallot, ginger, chili, coriander, turmeric, and a little lime zest with a splash of water into a rough paste (or use a store-bought curry paste — check the label, most contain shrimp paste, so blend your own if you’d rather avoid that).','Fry the paste in a little oil for 1–2 minutes until fragrant.','Stir in coconut milk and bring to a gentle simmer — don’t let it boil hard or the coconut milk can split.','Add bell pepper, simmer 3 minutes, then add shrimp and cook just until pink, 2–3 minutes.','Stir in spinach at the end until just wilted; season with salt and a squeeze of lime.','Serve over jasmine rice.'],
+        chefTip:'Simmer gently, never a hard boil, once the coconut milk goes in — that keeps the sauce silky instead of greasy and separated.',
+        shortcut:'A ‘vegan’ or ‘fish-free’ labeled Thai red curry paste from the store is the single biggest time-saver here and skips the blending step entirely.'}),
+      C: r({id:'d-thai-c', title:'Thai Garlic-Pepper Salmon with Stir-Fried Greens', kcal:570, protein:42, fiber:7, carbs:28, fat:28, satiety:'High', prepTime:10, cookTime:12,
+        ingredients:[ing(6,'oz','Salmon fillet','Protein'), ing(4,'','Garlic cloves, minced','Produce'), ing(0.5,'tsp','White pepper','Spices'), ing(1,'tbsp','Chopped cilantro stems','Produce'), ing(1.5,'tbsp','Soy sauce','Pantry'), ing(2,'cup','Bok choy or spinach','Produce'), ing(0.33,'cup','Cooked jasmine rice','Grains')],
+        steps:['Mash garlic, cilantro stems, and white pepper into a rough paste — a mortar and pestle takes 2 minutes, or use a mini chopper.','Rub the paste over the salmon; let it sit 5–10 minutes if you have time, or cook right away if you don’t.','Sear salmon in a hot pan 4 minutes, flip, add soy sauce to the pan, and cook 3 more minutes until just cooked through.','In the same pan, quickly stir-fry bok choy or spinach 2 minutes until just wilted.','Serve salmon over rice with the greens, spooning the garlicky pan sauce on top.'],
+        chefTip:'White pepper, not black, is what gives this dish its distinct Thai flavor — worth having a small jar just for this.',
+        shortcut:'Pre-minced garlic works fine here; skip the sit time entirely if you’re pressed and it’ll still taste good, just slightly less deep.'}) } },
+
+  Italian: {
+    lunch: {
+      A: r({id:'l-ita-a', title:'Italian Chicken & White Bean Salad', kcal:500, protein:40, fiber:11, carbs:34, fat:18, satiety:'High', prepTime:8, cookTime:12,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(0.5,'cup','Cannellini beans','Legumes'), ing(1.5,'cup','Arugula','Produce'), ing(0.5,'cup','Cherry tomatoes','Produce'), ing(1,'tbsp','Balsamic vinaigrette','Pantry'), ing(1,'tbsp','Shaved parmesan','Dairy')],
+        steps:['Season and grill chicken with Italian herbs (oregano, basil, garlic, olive oil), 5–6 minutes per side.','Toss cannellini beans, arugula, and cherry tomatoes with balsamic vinaigrette.','Top with sliced chicken and shaved parmesan.'],
+        chefTip:'Good olive oil and real parmesan (not the shelf-stable shaker kind) do most of the flavor work in a simple Italian salad like this — spend the extra dollar there.',
+        shortcut:'Canned cannellini beans, rinsed, are standard practice even in Italy for a quick salad like this.'}),
+      B: r({id:'l-ita-b', title:'Tuna & White Bean Salad', kcal:460, protein:38, fiber:10, carbs:28, fat:16, satiety:'High', prepTime:5, cookTime:0,
+        ingredients:[ing(5,'oz','Canned tuna in water','Protein'), ing(0.5,'cup','Cannellini beans','Legumes'), ing(1.5,'cup','Arugula','Produce'), ing(2,'tbsp','Red onion','Produce'), ing(1,'tbsp','Lemon-olive oil dressing','Pantry')],
+        steps:['Drain tuna well and flake it with a fork.','Toss with cannellini beans, arugula, and red onion.','Whisk lemon juice and olive oil, season with salt and pepper, and toss through.'],
+        chefTip:'This is essentially Italy’s own ‘insalata di tonno e fagioli’ — a genuine trattoria dish, not a diet-food invention, so it holds up on flavor.',
+        shortcut:'None needed — this is already a 5-minute no-cook meal.'}),
+      C: r({id:'l-ita-c', title:'Caprese Chicken Bowl with White Beans', kcal:500, protein:41, fiber:9, carbs:30, fat:20, satiety:'High', prepTime:8, cookTime:12,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(1,'oz','Fresh part-skim mozzarella','Dairy'), ing(0.5,'cup','Cherry tomatoes','Produce'), ing(2,'tbsp','Fresh basil','Produce'), ing(1,'tbsp','Balsamic glaze','Pantry'), ing(0.33,'cup','Cannellini beans','Legumes')],
+        steps:['Season chicken with salt, pepper, and a little garlic powder; pan-sear or grill 5–6 minutes per side.','Slice tomatoes and mozzarella; arrange with torn basil leaves.','Warm the white beans briefly with a drizzle of olive oil and a pinch of salt.','Plate chicken alongside the caprese and beans; drizzle everything with balsamic glaze.'],
+        chefTip:'Balsamic glaze (reduced balsamic) is thicker and sweeter than plain vinegar and clings to the plate better — buy it ready-made or simmer balsamic vinegar in a small pan until syrupy, about 8 minutes.',
+        shortcut:'Store-bought balsamic glaze is standard even among people who cook a lot of Italian food.'}) },
+    dinner: {
+      A: r({id:'d-ita-a', title:'Chicken Piccata with Asparagus & Whole-Wheat Pasta', kcal:550, protein:42, fiber:7, carbs:30, fat:24, satiety:'High', prepTime:8, cookTime:16,
+        ingredients:[ing(6,'oz','Chicken breast','Protein'), ing(1,'tbsp','Capers','Pantry'), ing(1,'tbsp','Lemon juice','Produce'), ing(0.25,'cup','Chicken broth','Pantry'), ing(1.5,'cup','Asparagus','Produce'), ing(0.33,'cup','Whole-wheat pasta','Grains'), ing(1,'tbsp','Parmesan','Dairy')],
+        steps:['Lightly pound chicken breast to an even thickness so it cooks evenly and quickly; season with salt and pepper.','Pan-sear 3–4 minutes per side until golden, then remove from the pan.','Deglaze the pan with chicken broth and lemon juice, scraping up the browned bits — that’s where the flavor is; add capers and simmer 2 minutes.','Return the chicken to the pan to coat in the sauce.','Roast or steam asparagus 6–8 minutes until just tender.','Serve chicken and sauce over a small portion of pasta with asparagus alongside, topped with parmesan.'],
+        chefTip:'Scraping the browned bits off the bottom of the pan when you deglaze is where most of the sauce’s flavor comes from — don’t use a clean pan for that step.',
+        shortcut:'Jarred capers and bottled lemon juice are completely standard here; this is already a 20-minute dish with no real shortcuts needed on technique.'}),
+      B: r({id:'d-ita-b', title:'Baked Salmon with Tomato Basil & Spinach', kcal:570, protein:40, fiber:8, carbs:24, fat:30, satiety:'High', prepTime:8, cookTime:18,
+        ingredients:[ing(6,'oz','Salmon fillet','Protein'), ing(0.5,'cup','Crushed tomatoes','Produce'), ing(1,'clove','Garlic, minced','Produce'), ing(0.25,'cup','Fresh basil, torn','Produce'), ing(1.5,'cup','Spinach','Produce'), ing(0.33,'cup','Whole-wheat pasta','Grains')],
+        steps:['Season salmon and place in a baking dish.','Spoon crushed tomatoes mixed with minced garlic and half the basil over the top.','Bake at 400°F for 15–18 minutes until the salmon is just cooked through and the sauce is bubbling.','Sauté spinach with a little olive oil and garlic, 2–3 minutes, in a separate pan.','Serve over a small portion of pasta with spinach alongside, topped with the remaining fresh basil.'],
+        chefTip:'Basil added raw at the very end tastes noticeably fresher than basil that’s been in the oven the whole time — always hold some back.',
+        shortcut:'A good jarred marinara or arrabbiata sauce can replace the crushed tomato/garlic/basil mix entirely if you want this down to 5 minutes of prep.'}),
+      C: r({id:'d-ita-c', title:'Turkey Bolognese with Whole-Wheat Pasta & Side Salad', kcal:560, protein:40, fiber:8, carbs:40, fat:22, satiety:'High', prepTime:10, cookTime:25,
+        ingredients:[ing(6,'oz','Lean ground turkey','Protein'), ing(0.25,'cup','Diced carrot','Produce'), ing(0.25,'cup','Diced celery','Produce'), ing(0.25,'cup','Diced onion','Produce'), ing(0.75,'cup','Crushed tomatoes','Produce'), ing(1,'clove','Garlic','Produce'), ing(0.4,'cup','Whole-wheat pasta','Grains'), ing(1,'tbsp','Parmesan','Dairy'), ing(1,'cup','Mixed greens (side salad)','Produce')],
+        steps:['Finely dice carrot, celery, and onion (the classic Italian ‘soffritto’) and sauté in olive oil for 6–7 minutes until softened.','Add ground turkey, breaking it up, and cook until browned, 5–6 minutes.','Add crushed tomatoes and garlic, season with salt, pepper, and a little dried oregano; simmer 15–20 minutes, stirring occasionally, until thickened.','Toss with cooked whole-wheat pasta and top with parmesan; serve with a simple side salad.'],
+        chefTip:'The soffritto — carrot, celery, and onion cooked slowly before the meat goes in — is what separates a real bolognese from meat sauce with vegetables thrown in. Worth the extra 6 minutes.',
+        shortcut:'A good jarred marinara as the tomato base adds extra flavor for zero extra effort — look for one without added sugar.'}) } },
+
+  American: {
+    lunch: {
+      A: r({id:'l-usa-a', title:'BBQ Chicken Salad Bowl', kcal:500, protein:40, fiber:10, carbs:38, fat:14, satiety:'High', prepTime:8, cookTime:12,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(1.5,'tbsp','Low-sugar BBQ sauce','Pantry'), ing(0.33,'cup','Black beans','Legumes'), ing(0.33,'cup','Corn','Produce'), ing(1.5,'cup','Mixed greens','Produce'), ing(0.25,'','Avocado','Produce')],
+        steps:['Season and grill or pan-sear chicken, 5–6 minutes per side, until cooked through.','Toss the hot chicken with BBQ sauce right away so it absorbs and clings.','Toss beans, corn, and greens; top with the BBQ chicken and avocado.'],
+        chefTip:'Tossing the chicken in sauce right after cooking, while it’s still hot, helps the sauce actually cling instead of sliding off.'}),
+      B: r({id:'l-usa-b', title:'Turkey & Sweet Potato Power Bowl', kcal:480, protein:38, fiber:9, carbs:36, fat:14, satiety:'High', prepTime:8, cookTime:15,
+        ingredients:[ing(5,'oz','Ground turkey (93/7)','Protein'), ing(0.5,'cup','Roasted sweet potato','Produce'), ing(1,'cup','Broccoli','Produce'), ing(1.5,'tbsp','Greek yogurt ranch','Dairy')],
+        steps:['Cook seasoned ground turkey in a pan over medium-high heat, breaking it up, 6–8 minutes.','Roast sweet potato and broccoli at 425°F for 18–20 minutes, or steam the broccoli separately if short on oven time.','Combine everything and finish with a yogurt ranch drizzle.'],
+        chefTip:'Stir a packet of ranch seasoning into plain Greek yogurt for an instant, protein-rich ranch that tastes just like the bottled kind.'}),
+      C: r({id:'l-usa-c', title:'Buffalo Chicken Salad Bowl', kcal:490, protein:40, fiber:8, carbs:28, fat:20, satiety:'High', prepTime:8, cookTime:12,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(1.5,'tbsp','Buffalo hot sauce','Pantry'), ing(1.5,'tbsp','Greek yogurt ranch','Dairy'), ing(0.5,'cup','Sliced celery','Produce'), ing(0.33,'cup','Sliced carrot','Produce'), ing(1.5,'cup','Mixed greens','Produce'), ing(1,'tbsp','Light feta or blue cheese crumbles','Dairy')],
+        steps:['Season and grill or pan-sear chicken, 5–6 minutes per side, until cooked through.','Toss the hot cooked chicken with buffalo hot sauce right away so it absorbs the sauce.','Toss greens, celery, and carrot; top with the buffalo chicken.','Drizzle with Greek yogurt ranch and a light crumble of cheese.'],
+        chefTip:'Tossing the chicken in hot sauce while it’s still hot from the pan is what makes the sauce cling instead of pooling at the bottom of the bowl.',
+        shortcut:'Store-bought buffalo sauce and a ranch seasoning packet stirred into Greek yogurt both work well and are what most people actually use.'}) },
+    dinner: {
+      A: r({id:'d-usa-a', title:'Herb Grilled Chicken with Sweet Potato Mash', kcal:560, protein:44, fiber:8, carbs:34, fat:22, satiety:'High', prepTime:10, cookTime:22,
+        ingredients:[ing(6,'oz','Chicken breast','Protein'), ing(0.75,'cup','Mashed sweet potato','Produce'), ing(2,'tbsp','Greek yogurt (in mash)','Dairy'), ing(1.5,'cup','Green beans','Produce'), ing(0.5,'tsp','Thyme & rosemary','Spices')],
+        steps:['Season chicken with thyme, rosemary, salt, and pepper; grill or pan-sear 6–7 minutes per side.','Boil or steam sweet potato until fork-tender, about 15 minutes, then mash with Greek yogurt instead of butter.','Steam green beans 5–6 minutes until just tender.','Plate chicken with mash and green beans.'],
+        chefTip:'Mashing sweet potato with Greek yogurt instead of butter keeps it light while still tasting rich — you genuinely don’t miss the butter here.'}),
+      B: r({id:'d-usa-b', title:'Cajun Salmon with Brussels Sprouts & Sweet Potato', kcal:580, protein:40, fiber:9, carbs:30, fat:28, satiety:'High', prepTime:8, cookTime:20,
+        ingredients:[ing(6,'oz','Salmon fillet','Protein'), ing(1,'tbsp','Cajun seasoning','Spices'), ing(1.5,'cup','Brussels sprouts','Produce'), ing(0.5,'cup','Sweet potato','Produce')],
+        steps:['Season salmon generously with cajun seasoning.','Toss halved Brussels sprouts and cubed sweet potato with oil, salt, and pepper; roast at 425°F for 15 minutes.','Add the salmon to the same sheet pan and roast 10–12 more minutes until everything is done together.'],
+        chefTip:'Cutting the Brussels sprouts in half (not quartered) gives you more flat surface area to caramelize against the pan — that’s where the good flavor is.'}),
+      C: r({id:'d-usa-c', title:'Turkey Meatloaf Muffins with Green Beans & Sweet Potato Mash', kcal:560, protein:42, fiber:8, carbs:32, fat:24, satiety:'High', prepTime:10, cookTime:25,
+        ingredients:[ing(6,'oz','Lean ground turkey','Protein'), ing(2,'tbsp','Rolled oats (binder)','Grains'), ing(0.3,'','Egg','Protein'), ing(2,'tbsp','Minced onion','Produce'), ing(1,'tbsp','Ketchup or BBQ glaze','Pantry'), ing(1.5,'cup','Green beans','Produce'), ing(0.5,'cup','Mashed sweet potato','Produce')],
+        steps:['Mix ground turkey with oats, a beaten egg, minced onion, salt, and pepper.','Press into a greased muffin tin — individual portions cook faster and more evenly than one big loaf, and make portioning easy.','Brush the tops with ketchup or BBQ sauce and bake at 375°F for 22–25 minutes until cooked through.','Roast green beans at 425°F for 12–15 minutes while the meatloaf bakes.','Mash sweet potato with a spoon of Greek yogurt instead of butter.'],
+        chefTip:'Baking meatloaf as muffins isn’t just for portioning — the extra surface area means more of that glazed, slightly caramelized top, which is the best part.',
+        shortcut:'Old-fashioned or quick oats both work as the binder; no need for breadcrumbs specifically.'}) } },
+
+  Mexican: {
+    lunch: {
+      A: r({id:'l-mex-a', title:'Chicken Fajita Bowl', kcal:500, protein:40, fiber:10, carbs:36, fat:16, satiety:'High', prepTime:10, cookTime:14,
+        ingredients:[ing(5,'oz','Chicken breast','Protein'), ing(1.5,'cup','Bell peppers & onion','Produce'), ing(0.33,'cup','Black beans','Legumes'), ing(0.5,'cup','Cauliflower rice','Produce'), ing(2,'tbsp','Salsa','Pantry'), ing(1.5,'tbsp','Lime yogurt crema','Dairy')],
+        steps:['Slice chicken into strips and toss with fajita seasoning.','Sauté chicken in a hot pan 3–4 minutes, then add peppers and onion; cook 6–7 more minutes until the chicken is cooked through and the vegetables have a little char.','Warm the cauliflower rice and beans separately.','Serve chicken and peppers over cauliflower rice with beans, salsa, and lime yogurt crema.'],
+        chefTip:'Cook the chicken first and add the vegetables after — if everything goes in together, the peppers release water before the chicken has a chance to brown.'}),
+      B: r({id:'l-mex-b', title:'Shrimp Taco Bowl', kcal:480, protein:36, fiber:9, carbs:38, fat:14, satiety:'High', prepTime:8, cookTime:8,
+        ingredients:[ing(6,'oz','Shrimp','Protein'), ing(1.5,'cup','Cabbage slaw','Produce'), ing(0.33,'cup','Black beans','Legumes'), ing(0.33,'cup','Cooked brown rice','Grains'), ing(0.25,'','Avocado','Produce'), ing(0.5,'','Lime','Produce')],
+        steps:['Season shrimp with chili powder, cumin, and a pinch of salt.','Sauté 90 seconds per side until pink and just cooked through.','Serve over rice with slaw, black beans, avocado, and a generous squeeze of lime.'],
+        chefTip:'Shrimp go from perfect to rubbery in under a minute — pull them the moment they turn opaque and curl into a loose ‘C’ shape.'}),
+      C: r({id:'l-mex-c', title:'Chicken Tinga Bowl', kcal:500, protein:40, fiber:9, carbs:38, fat:14, satiety:'High', prepTime:10, cookTime:20,
+        ingredients:[ing(5,'oz','Chicken breast (shredded)','Protein'), ing(1,'tsp','Chipotle in adobo, minced','Pantry'), ing(0.5,'cup','Tomato','Produce'), ing(0.25,'cup','Onion','Produce'), ing(1,'clove','Garlic','Produce'), ing(0.33,'cup','Black beans','Legumes'), ing(0.33,'cup','Cooked brown rice','Grains')],
+        steps:['Poach chicken breast in simmering water 12–15 minutes until cooked through, then shred with two forks (or use rotisserie chicken to skip this step entirely).','Sauté onion and garlic until soft, add tomato and minced chipotle in adobo, and simmer 8–10 minutes until it breaks down into a sauce.','Add shredded chicken to the sauce and simmer 5 minutes to soak up the flavor.','Serve over rice with black beans alongside.'],
+        chefTip:'Chipotle in adobo (the small cans near the Mexican foods section) is the real flavor engine here — one or two peppers minced up goes a long way, and the leftover can freezes well in small portions.',
+        shortcut:'Rotisserie chicken, shredded, turns this into a 15-minute meal — it’s genuinely what a lot of home cooks use for tinga.'}) },
+    dinner: {
+      A: r({id:'d-mex-a', title:'Chipotle Lime Chicken with Cilantro Rice & Black Beans', kcal:560, protein:44, fiber:11, carbs:36, fat:20, satiety:'High', prepTime:10, cookTime:14, marinateTime:20,
+        ingredients:[ing(6,'oz','Boneless chicken thigh','Protein'), ing(1,'tbsp','Chipotle-lime marinade','Pantry'), ing(0.5,'cup','Black beans','Legumes'), ing(1,'cup','Cilantro-lime cauliflower rice','Produce'), ing(2,'tbsp','Brown rice','Grains')],
+        steps:['Marinate chicken in chipotle-lime marinade at least 20 minutes.','Grill or pan-sear 6–7 minutes per side until charred and cooked through; rest 5 minutes before slicing.','Warm black beans; stir chopped cilantro and lime juice into the cauliflower rice.','Serve chicken over the cilantro-lime rice with beans alongside.'],
+        chefTip:'Resting the chicken before slicing keeps the juices in instead of on the cutting board — 5 minutes makes a real difference.'}),
+      B: r({id:'d-mex-b', title:'Carne Asada-Style Lean Steak with Grilled Veg & Black Beans', kcal:580, protein:42, fiber:10, carbs:28, fat:28, satiety:'High', prepTime:10, cookTime:12, marinateTime:30,
+        ingredients:[ing(6,'oz','Lean sirloin steak','Protein'), ing(1,'tbsp','Lime & garlic marinade','Pantry'), ing(1.5,'cup','Bell peppers & onion','Produce'), ing(0.5,'cup','Black beans','Legumes')],
+        steps:['Marinate steak in lime juice, garlic, and a little oil for at least 30 minutes.','Grill or sear over high heat, 3–4 minutes per side for medium, then rest 5 minutes before slicing against the grain.','Grill or sauté peppers and onion until charred at the edges, 6–7 minutes.','Serve sliced steak with grilled vegetables and black beans.'],
+        chefTip:'Slicing against the grain (perpendicular to the muscle fibers) is what keeps a leaner cut like sirloin tender — slicing with the grain makes the same steak noticeably chewier.'}),
+      C: r({id:'d-mex-c', title:'Mexican-Style Grilled Shrimp with Elote-Style Corn & Black Beans', kcal:540, protein:38, fiber:9, carbs:36, fat:20, satiety:'High', prepTime:8, cookTime:10,
+        ingredients:[ing(6,'oz','Shrimp','Protein'), ing(1,'tsp','Chili-lime seasoning','Spices'), ing(0.5,'cup','Corn','Produce'), ing(1,'tbsp','Greek yogurt','Dairy'), ing(1,'tbsp','Cotija or feta cheese','Dairy'), ing(0.5,'','Lime','Produce'), ing(0.33,'cup','Black beans','Legumes')],
+        steps:['Toss shrimp with chili-lime seasoning and a little oil; grill or sear 90 seconds per side until pink and just cooked through.','Char corn in a dry, hot pan or on a grill until it picks up real color, 4–5 minutes — let it sit without stirring constantly.','Toss the charred corn with Greek yogurt, a squeeze of lime, chili powder, and crumbled cotija or feta.','Serve shrimp over the elote-style corn with black beans and extra lime.'],
+        chefTip:'Getting real char on the corn — letting it sit in the pan instead of stirring constantly — is what makes this taste like street elote instead of boiled corn with toppings.',
+        shortcut:'Frozen corn works fine for charring; canned corn (drained and patted dry) works in a pinch too.'}) } }
+};
+
+// ---- Snacks (12 total, rotate two per day) ----
+const SNACKS = [
+  r({ id:'s1', type:'snack', cuisine:'Mediterranean', title:'Greek Yogurt + Berries + Almonds', kcal:190, protein:16, fiber:4, carbs:16, fat:8, satiety:'Medium', prepTime:3, cookTime:0,
+    ingredients:[ing(0.5,'cup','Greek yogurt','Dairy'), ing(0.33,'cup','Berries','Produce'), ing(6,'','Almonds','Pantry')],
+    steps:['Combine yogurt, berries, and almonds in a bowl.'],
+    chefTip:'Full-fat or 2% Greek yogurt keeps you fuller than fat-free — the extra ~30 calories is worth it for satiety.' }),
+  r({ id:'s2', type:'snack', cuisine:'Mediterranean', title:'Tzatziki + Veggie Sticks', kcal:150, protein:9, fiber:4, carbs:14, fat:7, satiety:'Medium', prepTime:5, cookTime:0,
+    ingredients:[ing(0.4,'cup','Greek yogurt','Dairy'), ing(2,'tbsp','Grated cucumber','Produce'), ing(1,'pinch','Garlic powder','Spices'), ing(1,'pinch','Dried dill','Spices'), ing(1.5,'cup','Carrot & cucumber sticks','Produce')],
+    steps:['Mix yogurt with grated cucumber, a pinch of garlic, and dill.','Dip vegetable sticks.'],
+    chefTip:'Squeeze the water out of the grated cucumber first so the dip stays thick instead of watery.' }),
+  r({ id:'s3', type:'snack', cuisine:'Indian', title:'Masala Roasted Makhana & Peanuts', kcal:170, protein:7, fiber:4, carbs:18, fat:9, satiety:'Medium', prepTime:2, cookTime:8,
+    ingredients:[ing(1,'cup','Makhana (fox nuts)','Pantry'), ing(2,'tbsp','Roasted peanuts','Pantry'), ing(1,'tsp','Ghee or oil','Dairy'), ing(0.25,'tsp','Chaat masala','Spices'), ing(0.25,'tsp','Red chili powder','Spices')],
+    steps:['Roast makhana in a dry pan (or with a teaspoon of ghee) over medium heat, stirring often, until crisp, about 6–8 minutes.','Toss hot with chaat masala, chili powder, and roasted peanuts.'],
+    chefTip:'Makhana (fox nuts) are a classic Indian roasted snack — light, crunchy, and they take on spice really well while staying low-calorie.' }),
+  r({ id:'s4', type:'snack', cuisine:'American', title:'Apple + Almond Butter', kcal:200, protein:6, fiber:5, carbs:26, fat:9, satiety:'Medium', prepTime:2, cookTime:0,
+    ingredients:[ing(1,'medium','Apple','Produce'), ing(1,'tbsp','Almond butter','Pantry')],
+    steps:['Slice the apple and serve with almond butter for dipping.'],
+    chefTip:'The fiber in the apple skin slows down how fast the sugar hits — don’t peel it.' }),
+  r({ id:'s5', type:'snack', cuisine:'American', title:'Cottage Cheese + Pineapple', kcal:170, protein:20, fiber:1, carbs:14, fat:3, satiety:'High', prepTime:2, cookTime:0,
+    ingredients:[ing(0.75,'cup','Low-fat cottage cheese','Dairy'), ing(0.5,'cup','Pineapple','Produce')],
+    steps:['Combine and eat chilled.'],
+    chefTip:'Cottage cheese is mostly casein protein, which digests slowly — it’s one of the better late-evening options if you tend to get hungry before bed.' }),
+  r({ id:'s6', type:'snack', cuisine:'American', title:'Protein Shake + Nuts', kcal:210, protein:25, fiber:2, carbs:10, fat:8, satiety:'Medium', prepTime:2, cookTime:0,
+    ingredients:[ing(1,'scoop','Protein powder','Protein'), ing(1,'cup','Water or almond milk','Pantry'), ing(1,'tbsp','Mixed nuts','Pantry')],
+    steps:['Shake protein powder with water or almond milk.','Eat nuts on the side.'],
+    chefTip:'Shaking with water instead of milk keeps this a genuinely light snack — use almond milk if you want it creamier at a small calorie cost.' }),
+  r({ id:'s7', type:'snack', cuisine:'Thai', title:'Edamame', kcal:150, protein:14, fiber:6, carbs:11, fat:5, satiety:'Medium', prepTime:1, cookTime:5,
+    ingredients:[ing(0.75,'cup','Shelled edamame','Produce'), ing(1,'pinch','Sea salt','Spices')],
+    steps:['Steam or microwave edamame 4–5 minutes.','Salt lightly and eat warm or chilled.'],
+    chefTip:'Edamame is one of the few plant proteins that’s actually "complete" (all essential amino acids) — a genuinely useful snack, not just a filler.' }),
+  r({ id:'s8', type:'snack', cuisine:'Indian', title:'Sprouted Moong Chaat', kcal:160, protein:11, fiber:7, carbs:22, fat:3, satiety:'Medium', prepTime:5, cookTime:0,
+    ingredients:[ing(1,'cup','Sprouted moong beans','Legumes'), ing(0.25,'cup','Diced tomato','Produce'), ing(2,'tbsp','Diced onion','Produce'), ing(1,'tsp','Lemon juice','Produce'), ing(0.25,'tsp','Chaat masala','Spices'), ing(1,'tbsp','Chopped cilantro','Produce')],
+    steps:['Toss sprouted moong with tomato, onion, lemon juice, and chaat masala.','Top with cilantro; eat as is, or steam the sprouts 2 minutes first if you prefer them less crunchy.'],
+    chefTip:'Chaat masala is the fastest way to make any raw vegetable or bean snack taste distinctly Indian — keep a jar in the pantry.' }),
+  r({ id:'s9', type:'snack', cuisine:'Indian', title:'Boiled Egg with Chaat Masala', kcal:140, protein:12, fiber:0, carbs:2, fat:9, satiety:'Medium', prepTime:1, cookTime:10,
+    ingredients:[ing(2,'','Eggs','Protein'), ing(0.25,'tsp','Chaat masala','Spices'), ing(1,'pinch','Black salt','Spices')],
+    steps:['Boil eggs 9–10 minutes, then cool and peel.','Slice and sprinkle with chaat masala and a pinch of black salt.'],
+    chefTip:'Boil a batch of 6–8 eggs at the start of the week — this turns into a 10-second snack the rest of the week.' }),
+  r({ id:'s10', type:'snack', cuisine:'American', title:'Roasted Peanut & Seed Mix', kcal:190, protein:8, fiber:3, carbs:10, fat:15, satiety:'Medium', prepTime:2, cookTime:0,
+    ingredients:[ing(2,'tbsp','Roasted peanuts','Pantry'), ing(1,'tbsp','Pumpkin seeds','Pantry'), ing(1,'tbsp','Sunflower seeds','Pantry')],
+    steps:['Combine and portion into a small bowl.'],
+    chefTip:'Pre-portion this into small bags at the start of the week so it’s grab-and-go instead of a decision every time.' }),
+  r({ id:'s11', type:'snack', cuisine:'Indian', title:'Paneer Tikka Bites', kcal:200, protein:16, fiber:1, carbs:6, fat:13, satiety:'Medium', prepTime:5, cookTime:6,
+    ingredients:[ing(3,'oz','Paneer, cubed','Dairy'), ing(1,'tbsp','Greek yogurt','Dairy'), ing(0.5,'tsp','Tandoori masala','Spices'), ing(0.25,'cup','Bell pepper','Produce')],
+    steps:['Toss paneer and pepper in yogurt and tandoori masala.','Pan-sear 4–5 minutes until lightly charred on the edges.'],
+    chefTip:'A hot, dry pan (or a toaster oven on broil for 5 minutes) gets you real char without needing a full tandoor setup.' }),
+  r({ id:'s12', type:'snack', cuisine:'Mediterranean', title:'Watermelon & Feta Bites', kcal:120, protein:5, fiber:1, carbs:16, fat:5, satiety:'Low', prepTime:4, cookTime:0,
+    ingredients:[ing(1,'cup','Cubed watermelon','Produce'), ing(1,'tbsp','Crumbled feta','Dairy'), ing(1,'tsp','Chopped mint','Produce'), ing(0.25,'','Lime, squeezed','Produce')],
+    steps:['Combine watermelon, feta, and mint.','Finish with a squeeze of lime; eat chilled.'],
+    chefTip:'Salty feta against sweet watermelon is a classic Greek warm-weather pairing, not just a diet trick.' })
+];
+
+// Flatten all recipes for library/search/swap
+const ALL_RECIPES = [];
+const BREAKFAST_VARIANTS = ['A','B'];
+const LD_VARIANTS = ['A','B','C'];
+CUISINES.forEach(c => {
+  BREAKFAST_VARIANTS.forEach(v => ALL_RECIPES.push({...BREAKFASTS[c][v], type:'breakfast', cuisine:c}));
+  LD_VARIANTS.forEach(v => ALL_RECIPES.push({...LUNCH_DINNER[c].lunch[v], type:'lunch', cuisine:c}));
+  LD_VARIANTS.forEach(v => ALL_RECIPES.push({...LUNCH_DINNER[c].dinner[v], type:'dinner', cuisine:c}));
+});
+SNACKS.forEach(r => ALL_RECIPES.push(r));
+const RECIPE_BY_ID = Object.fromEntries(ALL_RECIPES.map(rr => [rr.id, rr]));
+
+/* =========================================================
+   STATE / STORAGE
+========================================================= */
+const LS_KEY = 'smp_v1';
+function loadState(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    return Object.assign({
+      persons: 2,
+      calorieTarget: 1800,
+      proteinTarget: 130,
+      fiberTarget: 32,
+      weekOffset: 0,
+      eaten: {},     // "date:slot" -> true
+      swaps: {},     // "date:slot" -> recipeId
+      shopChecked: {} // "weekStart:name:unit" -> true
+    }, raw);
+  }catch(e){ return { persons:2, calorieTarget:1800, proteinTarget:130, fiberTarget:32, weekOffset:0, eaten:{}, swaps:{}, shopChecked:{} }; }
+}
+let state = loadState();
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+/* =========================================================
+   DATE HELPERS
+========================================================= */
+function getMonday(d){
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  const m = new Date(date);
+  m.setDate(diff);
+  m.setHours(0,0,0,0);
+  return m;
+}
+function addDays(d, n){ const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function isoDate(d){ return d.toISOString().slice(0,10); }
+function fmtShort(d){ return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
+function fmtWeekday(d){ return d.toLocaleDateString(undefined,{weekday:'short'}); }
+function fmtWeekdayFull(d){ return d.toLocaleDateString(undefined,{weekday:'long'}); }
+
+function currentWeekStart(){ return addDays(getMonday(new Date()), state.weekOffset*7); }
+
+/* =========================================================
+   QUANTITY FORMATTING
+========================================================= */
+function fmtQty(n){
+  if (Math.abs(n - Math.round(n)) < 0.01) return String(Math.round(n));
+  const whole = Math.floor(n);
+  const frac = n - whole;
+  const fracs = [[0.125,'⅛'],[0.25,'¼'],[0.333,'⅓'],[0.375,'⅜'],[0.5,'½'],[0.625,'⅝'],[0.667,'⅔'],[0.75,'¾'],[0.875,'⅞']];
+  for (const [val, sym] of fracs){
+    if (Math.abs(frac - val) < 0.02) return (whole > 0 ? whole + ' ' : '') + sym;
+  }
+  return (Math.round(n*100)/100).toString();
+}
+
+/* =========================================================
+   WEEK PLAN GENERATION
+========================================================= */
+function getDayPlan(weekOffset, dayIndex){
+  const cuisine = CUISINES[dayIndex];
+  const bIdx = (((weekOffset % 2) + 2) % 2);
+  const ldIdx = (((weekOffset % 3) + 3) % 3);
+  const bVariant = BREAKFAST_VARIANTS[bIdx];
+  const ldVariant = LD_VARIANTS[ldIdx];
+  const breakfast = BREAKFASTS[cuisine][bVariant];
+  const lunch = { ...LUNCH_DINNER[cuisine].lunch[ldVariant], type:'lunch', cuisine };
+  const dinner = { ...LUNCH_DINNER[cuisine].dinner[ldVariant], type:'dinner', cuisine };
+  const snackIdx1 = (((dayIndex*2 + weekOffset*2) % SNACKS.length) + SNACKS.length) % SNACKS.length;
+  const snackIdx2 = (snackIdx1 + 1) % SNACKS.length;
+  return {
+    cuisine,
+    slots: {
+      breakfast: {...breakfast, type:'breakfast'},
+      lunch,
+      dinner,
+      snack1: {...SNACKS[snackIdx1]},
+      snack2: {...SNACKS[snackIdx2]}
+    }
+  };
+}
+
+function getEffectiveMeal(dateISO, slotKey, basePlanMeal){
+  const overrideId = state.swaps[dateISO + ':' + slotKey];
+  if (overrideId && RECIPE_BY_ID[overrideId]) return RECIPE_BY_ID[overrideId];
+  return basePlanMeal;
+}
+
+function getWeekDays(weekOffset){
+  const start = addDays(getMonday(new Date()), weekOffset*7);
+  const days = [];
+  for (let i=0;i<7;i++){
+    const date = addDays(start, i);
+    const dateISO = isoDate(date);
+    const plan = getDayPlan(weekOffset, i);
+    const slots = {};
+    Object.keys(plan.slots).forEach(k => { slots[k] = getEffectiveMeal(dateISO, k, plan.slots[k]); });
+    days.push({ date, dateISO, cuisine: plan.cuisine, slots });
+  }
+  return days;
+}
+
+function dayTotals(day){
+  let kcal=0, protein=0, fiber=0;
+  Object.values(day.slots).forEach(m => { kcal+=m.kcal; protein+=m.protein; fiber+=m.fiber; });
+  return {kcal, protein, fiber};
+}
+
+/* =========================================================
+   RENDER: THIS WEEK
+========================================================= */
+const SLOT_LABELS = {breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack1:'Snack', snack2:'Snack'};
+const todayISO = isoDate(new Date());
+
+function renderWeek(){
+  const days = getWeekDays(state.weekOffset);
+  const start = days[0].date, end = days[6].date;
+  document.getElementById('weekRangeLabel').textContent = `${fmtShort(start)} – ${fmtShort(end)}, ${end.getFullYear()}`;
+  document.getElementById('weekRangeSub').textContent = state.weekOffset===0 ? 'Current week' : (state.weekOffset>0 ? `${state.weekOffset} week(s) ahead` : `${Math.abs(state.weekOffset)} week(s) ago`);
+  document.getElementById('nextWeek').disabled = false;
+  document.getElementById('thisWeekBtn').disabled = state.weekOffset===0;
+
+  const cont = document.getElementById('daysContainer');
+  cont.innerHTML = days.map(day => {
+    const totals = dayTotals(day);
+    const isToday = day.dateISO === todayISO;
+    const rows = Object.keys(SLOT_LABELS).map(slotKey => {
+      const meal = day.slots[slotKey];
+      const eatKey = day.dateISO + ':' + slotKey;
+      const checked = !!state.eaten[eatKey];
+      const totalTime = (meal.prepTime||0) + (meal.cookTime||0);
+      return `<div class="meal-row">
+        <div class="top">
+          <div style="flex:1;min-width:0">
+            <div class="slot">${SLOT_LABELS[slotKey]}</div>
+            <div class="title" data-id="${meal.id}">${meal.title}</div>
+            <div class="macros"><span>${meal.kcal} kcal</span><span>${meal.protein}g protein</span><span>${meal.fiber}g fiber</span><span>⏱ ${totalTime} min${meal.marinateTime?' + marinate':''}</span></div>
+          </div>
+          <div class="actions">
+            <button class="swap-btn" title="Swap this meal" data-date="${day.dateISO}" data-slot="${slotKey}" data-mealtype="${meal.type}">⇄</button>
+            <input type="checkbox" class="eat-check" title="Mark eaten" data-key="${eatKey}" ${checked?'checked':''} />
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="day-card ${isToday?'today':''}">
+      <div class="day-head">
+        <div class="d">${fmtWeekdayFull(day.date)}<small>${fmtShort(day.date)}${isToday?' • Today':''}</small></div>
+        <span class="cuisine-pill">${day.cuisine}</span>
+      </div>
+      ${rows}
+      <div class="day-total"><span>Day total</span><span>${totals.kcal} kcal · ${totals.protein}g protein · ${totals.fiber}g fiber</span></div>
+    </div>`;
+  }).join('');
+
+  cont.querySelectorAll('.eat-check').forEach(cb => cb.addEventListener('change', e => {
+    state.eaten[e.target.dataset.key] = e.target.checked;
+    save(); renderHeaderStats(); renderTracker();
+  }));
+  cont.querySelectorAll('.swap-btn').forEach(btn => btn.addEventListener('click', e => {
+    openSwapModal(btn.dataset.date, btn.dataset.slot, btn.dataset.mealtype);
+  }));
+  cont.querySelectorAll('.meal-row .title').forEach(el => el.addEventListener('click', () => openRecipeModal(el.dataset.id)));
+
+  renderShopping();
+  renderTracker();
+  renderHeaderStats();
+}
+
+document.getElementById('prevWeek').addEventListener('click', () => { state.weekOffset--; save(); renderWeek(); });
+document.getElementById('nextWeek').addEventListener('click', () => { state.weekOffset++; save(); renderWeek(); });
+document.getElementById('thisWeekBtn').addEventListener('click', () => { state.weekOffset=0; save(); renderWeek(); });
+document.getElementById('printWeek').addEventListener('click', () => window.print());
+
+/* =========================================================
+   SWAP MODAL
+========================================================= */
+let swapCtx = null;
+function openSwapModal(dateISO, slotKey, mealType){
+  swapCtx = {dateISO, slotKey, mealType};
+  document.getElementById('swapTitle').textContent = `Swap ${SLOT_LABELS[slotKey].toLowerCase()}`;
+  document.getElementById('swapSearch').value = '';
+  renderSwapList('');
+  document.getElementById('swapModalBg').classList.add('open');
+}
+function renderSwapList(query){
+  const q = query.trim().toLowerCase();
+  const pool = ALL_RECIPES.filter(r => r.type === swapCtx.mealType && (`${r.title} ${r.cuisine}`).toLowerCase().includes(q));
+  document.getElementById('swapList').innerHTML = pool.map(r =>
+    `<div class="swap-opt" data-id="${r.id}"><div><div class="name">${r.title}</div><div class="tag">${r.cuisine} · ${r.kcal} kcal · ${r.protein}g protein · ${r.fiber}g fiber</div></div><span>→</span></div>`
+  ).join('') || '<div class="tag">No matches.</div>';
+  document.querySelectorAll('.swap-opt').forEach(el => el.addEventListener('click', () => {
+    state.swaps[swapCtx.dateISO + ':' + swapCtx.slotKey] = el.dataset.id;
+    save();
+    document.getElementById('swapModalBg').classList.remove('open');
+    renderWeek();
+  }));
+}
+document.getElementById('swapSearch').addEventListener('input', e => renderSwapList(e.target.value));
+document.getElementById('swapCloseBtn').addEventListener('click', () => document.getElementById('swapModalBg').classList.remove('open'));
+document.getElementById('swapModalBg').addEventListener('click', e => { if (e.target.id==='swapModalBg') e.currentTarget.classList.remove('open'); });
+
+/* =========================================================
+   RECIPES TAB
+========================================================= */
+let activeCuisineFilter = 'All';
+let activeTypeFilter = 'All';
+function renderFilters(){
+  const cf = document.getElementById('cuisineFilters');
+  cf.innerHTML = ['All', ...CUISINES].map(c => `<button class="chip ${c===activeCuisineFilter?'active':''}" data-c="${c}">${c}</button>`).join('');
+  cf.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeCuisineFilter = b.dataset.c; renderFilters(); renderRecipes(); }));
+
+  const tf = document.getElementById('typeFilters');
+  const types = ['All','breakfast','lunch','dinner','snack'];
+  tf.innerHTML = types.map(t => `<button class="chip ${t===activeTypeFilter?'active':''}" data-t="${t}">${t==='All'?'All meals':t[0].toUpperCase()+t.slice(1)}</button>`).join('');
+  tf.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeTypeFilter = b.dataset.t; renderFilters(); renderRecipes(); }));
+}
+function renderRecipes(){
+  const q = document.getElementById('recipeSearch').value.trim().toLowerCase();
+  const shown = ALL_RECIPES.filter(r =>
+    (activeCuisineFilter==='All' || r.cuisine===activeCuisineFilter) &&
+    (activeTypeFilter==='All' || r.type===activeTypeFilter) &&
+    (`${r.title} ${r.cuisine} ${r.ingredients.map(i=>i.name).join(' ')}`).toLowerCase().includes(q)
+  );
+  document.getElementById('recipesContainer').innerHTML = shown.map(r => `
+    <article class="rcard" data-id="${r.id}">
+      <span class="cuisine-pill">${r.cuisine} · ${r.type}</span>
+      <h3>${r.title}</h3>
+      <div class="macro-row">
+        <span class="macro-chip kcal">${r.kcal} kcal</span>
+        <span class="macro-chip protein">${r.protein}g protein</span>
+        <span class="macro-chip fiber">${r.fiber}g fiber</span>
+        <span class="macro-chip time">⏱ ${(r.prepTime||0)+(r.cookTime||0)} min</span>
+      </div>
+      <div class="satiety">Satiety: ${r.satiety}</div>
+    </article>`).join('') || '<div class="tag">No recipes match.</div>';
+  document.querySelectorAll('.rcard').forEach(el => el.addEventListener('click', () => openRecipeModal(el.dataset.id)));
+}
+document.getElementById('recipeSearch').addEventListener('input', renderRecipes);
+
+/* =========================================================
+   RECIPE DETAIL MODAL
+========================================================= */
+let modalPersons = 1;
+function openRecipeModal(id){
+  const r = RECIPE_BY_ID[id];
+  if (!r) return;
+  modalPersons = state.persons;
+  document.getElementById('modalCuisine').textContent = `${r.cuisine} · ${r.type}`;
+  document.getElementById('modalTitle').textContent = r.title;
+  document.getElementById('modalSub').textContent = '';
+  document.getElementById('modalMacros').innerHTML = `
+    <span class="macro-chip kcal">${r.kcal} kcal</span>
+    <span class="macro-chip protein">${r.protein}g protein</span>
+    <span class="macro-chip fiber">${r.fiber}g fiber</span>
+    <span class="macro-chip">${r.carbs}g carbs</span>
+    <span class="macro-chip">${r.fat}g fat</span>`;
+  const timeChips = [`<span class="macro-chip time">🔪 Prep ${r.prepTime||0} min</span>`, `<span class="macro-chip time">🔥 Cook ${r.cookTime||0} min</span>`];
+  if (r.marinateTime) timeChips.push(`<span class="macro-chip time">⏳ Marinate ${r.marinateTime}+ min (hands-off)</span>`);
+  document.getElementById('modalTimes').innerHTML = timeChips.join('');
+  document.getElementById('modalSatiety').textContent = `Satiety: ${r.satiety}`;
+  document.getElementById('modalSteps').innerHTML = (r.steps||[]).map(s => `<li>${s}</li>`).join('');
+  const tipEl = document.getElementById('modalTip');
+  if (r.chefTip){ tipEl.style.display='block'; tipEl.innerHTML = `<b>👨‍🍳 Chef's tip:</b> ${r.chefTip}`; } else { tipEl.style.display='none'; }
+  const shortcutEl = document.getElementById('modalShortcut');
+  if (r.shortcut){ shortcutEl.style.display='block'; shortcutEl.innerHTML = `<b>🛒 Shortcut:</b> ${r.shortcut}`; } else { shortcutEl.style.display='none'; }
+  renderModalIngredients(r);
+  document.getElementById('recipeModalBg').classList.add('open');
+  document.getElementById('recipeModalBg').dataset.recipeId = id;
+}
+function renderModalIngredients(r){
+  document.getElementById('modalPersonsVal').textContent = modalPersons;
+  document.getElementById('modalIngredients').innerHTML = r.ingredients.map(i =>
+    `<tr><td class="qty">${fmtQty(i.qty*modalPersons)} ${i.unit}</td><td>${i.name}</td></tr>`
+  ).join('');
+}
+document.getElementById('modalPersonsMinus').addEventListener('click', () => {
+  if (modalPersons>1){ modalPersons--; renderModalIngredients(RECIPE_BY_ID[document.getElementById('recipeModalBg').dataset.recipeId]); }
+});
+document.getElementById('modalPersonsPlus').addEventListener('click', () => {
+  if (modalPersons<12){ modalPersons++; renderModalIngredients(RECIPE_BY_ID[document.getElementById('recipeModalBg').dataset.recipeId]); }
+});
+document.getElementById('modalCloseBtn').addEventListener('click', () => document.getElementById('recipeModalBg').classList.remove('open'));
+document.getElementById('recipeModalBg').addEventListener('click', e => { if (e.target.id==='recipeModalBg') e.currentTarget.classList.remove('open'); });
+
+/* =========================================================
+   SHOPPING LIST
+========================================================= */
+const CAT_ORDER = ['Protein','Produce','Dairy','Grains','Legumes','Pantry','Spices'];
+function renderShopping(){
+  const days = getWeekDays(state.weekOffset);
+  const weekStartISO = days[0].dateISO;
+  document.getElementById('shopWeekLabel').textContent = `${fmtShort(days[0].date)} – ${fmtShort(days[6].date)}`;
+  document.getElementById('shopPersonsLabel').textContent = state.persons;
+
+  const agg = {}; // key: name|unit -> {qty, unit, name, cat}
+  days.forEach(day => Object.values(day.slots).forEach(meal => {
+    meal.ingredients.forEach(i => {
+      const key = (i.name + '|' + i.unit).toLowerCase();
+      if (!agg[key]) agg[key] = { qty:0, unit:i.unit, name:i.name, cat:i.cat };
+      agg[key].qty += i.qty * state.persons;
+    });
+  }));
+
+  const byCat = {};
+  CAT_ORDER.forEach(c => byCat[c] = []);
+  Object.values(agg).forEach(item => { (byCat[item.cat] || (byCat[item.cat]=[])).push(item); });
+
+  document.getElementById('shopContainer').innerHTML = CAT_ORDER.filter(c => byCat[c] && byCat[c].length).map(cat => {
+    const items = byCat[cat].sort((a,b) => a.name.localeCompare(b.name)).map(item => {
+      const shopKey = `${weekStartISO}:${item.name}|${item.unit}`.toLowerCase();
+      const checked = !!state.shopChecked[shopKey];
+      return `<div class="shop-item ${checked?'checked':''}">
+        <input type="checkbox" data-key="${shopKey}" ${checked?'checked':''} />
+        <label><span class="amt">${fmtQty(item.qty)}${item.unit?' '+item.unit:''}</span> — ${item.name}</label>
+      </div>`;
+    }).join('');
+    return `<div class="shop-section"><h3>${cat}</h3>${items}</div>`;
+  }).join('');
+
+  document.querySelectorAll('#shopContainer input[type="checkbox"]').forEach(cb => cb.addEventListener('change', e => {
+    state.shopChecked[e.target.dataset.key] = e.target.checked;
+    save();
+    e.target.closest('.shop-item').classList.toggle('checked', e.target.checked);
+  }));
+
+  window._lastShoppingAgg = agg; // for copy
+}
+document.getElementById('shopResetBtn').addEventListener('click', () => {
+  const days = getWeekDays(state.weekOffset);
+  const weekStartISO = days[0].dateISO;
+  Object.keys(state.shopChecked).forEach(k => { if (k.startsWith(weekStartISO+':')) delete state.shopChecked[k]; });
+  save(); renderShopping();
+});
+document.getElementById('shopCopyBtn').addEventListener('click', async () => {
+  const agg = window._lastShoppingAgg || {};
+  const lines = Object.values(agg).sort((a,b)=>a.cat.localeCompare(b.cat)).map(i => `${fmtQty(i.qty)}${i.unit?' '+i.unit:''} — ${i.name}`);
+  const text = 'Shopping list (' + state.persons + ' people)\n' + lines.join('\n');
+  try{ await navigator.clipboard.writeText(text); const b=document.getElementById('shopCopyBtn'); const old=b.textContent; b.textContent='Copied!'; setTimeout(()=>b.textContent=old,1200); }
+  catch(e){ alert(text); }
+});
+
+/* =========================================================
+   TRACKER
+========================================================= */
+function computeDayActuals(dateISO){
+  const days = getWeekDays(Math.round((new Date(dateISO) - getMonday(new Date())) / (7*86400000)));
+  const day = days.find(d => d.dateISO === dateISO);
+  if (!day) return {kcal:0, protein:0, fiber:0};
+  let kcal=0, protein=0, fiber=0;
+  Object.keys(day.slots).forEach(slotKey => {
+    const eatKey = dateISO + ':' + slotKey;
+    if (state.eaten[eatKey]){
+      const m = day.slots[slotKey];
+      kcal += m.kcal; protein += m.protein; fiber += m.fiber;
+    }
+  });
+  return {kcal, protein, fiber};
+}
+function renderTracker(){
+  document.getElementById('trackerDateLabel').textContent = new Date().toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+  const actual = computeDayActuals(todayISO);
+  setBar('trackCalNum','trackCalBar', actual.kcal, state.calorieTarget, ' ');
+  setBar('trackProtNum','trackProtBar', actual.protein, state.proteinTarget, ' g');
+  setBar('trackFiberNum','trackFiberBar', actual.fiber, state.fiberTarget, ' g');
+
+  const tip = document.getElementById('trackTip');
+  if (actual.kcal === 0){
+    tip.textContent = 'Tip: check off meals on the "This Week" tab as you eat them to track your progress here.';
+  } else if (actual.kcal > state.calorieTarget){
+    tip.textContent = `You're ${actual.kcal - state.calorieTarget} kcal over today's target. Consider a lighter snack or trimming a carb side tomorrow.`;
+  } else {
+    tip.textContent = `You have ${state.calorieTarget - actual.kcal} kcal left today. High-fiber, high-protein snacks (edamame, cottage cheese) will keep you full without blowing the budget.`;
+  }
+
+  const days = getWeekDays(state.weekOffset);
+  const maxKcal = Math.max(...days.map(d => dayTotals(d).kcal), state.calorieTarget);
+  document.getElementById('weekBars').innerHTML = days.map(d => {
+    const t = dayTotals(d);
+    const h = Math.max(4, Math.round((t.kcal / maxKcal) * 130));
+    const isToday = d.dateISO === todayISO;
+    return `<div class="week-bar-col"><div class="week-bar ${isToday?'today':''}" style="height:${h}px" title="${t.kcal} kcal"></div><span>${fmtWeekday(d.date)}</span></div>`;
+  }).join('');
+}
+function setBar(numId, barId, actual, target, unit){
+  document.getElementById(numId).textContent = `${actual}${unit==' '?'':''} / ${target}${unit}`;
+  const pct = target>0 ? Math.min(100, Math.round((actual/target)*100)) : 0;
+  const bar = document.getElementById(barId);
+  bar.style.width = pct + '%';
+  bar.classList.toggle('over', actual > target);
+}
+
+/* =========================================================
+   HEADER STATS
+========================================================= */
+function renderHeaderStats(){
+  const actual = computeDayActuals(todayISO);
+  document.getElementById('hsCalories').textContent = `${actual.kcal}/${state.calorieTarget}`;
+  document.getElementById('hsProtein').textContent = `${actual.protein}/${state.proteinTarget}`;
+  document.getElementById('hsFiber').textContent = `${actual.fiber}/${state.fiberTarget}`;
+  document.getElementById('hsPersons').textContent = state.persons;
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+function renderSettings(){
+  document.getElementById('personsVal').textContent = state.persons;
+  document.getElementById('calorieTarget').value = state.calorieTarget;
+  document.getElementById('proteinTarget').value = state.proteinTarget;
+  document.getElementById('fiberTarget').value = state.fiberTarget;
+}
+document.getElementById('personsMinus').addEventListener('click', () => { if (state.persons>1){ state.persons--; save(); renderSettings(); renderWeek(); }});
+document.getElementById('personsPlus').addEventListener('click', () => { if (state.persons<12){ state.persons++; save(); renderSettings(); renderWeek(); }});
+document.getElementById('calorieTarget').addEventListener('change', e => { state.calorieTarget = Math.max(1200, +e.target.value || 1800); save(); renderTracker(); renderHeaderStats(); });
+document.getElementById('proteinTarget').addEventListener('change', e => { state.proteinTarget = Math.max(40, +e.target.value || 130); save(); renderTracker(); renderHeaderStats(); });
+document.getElementById('fiberTarget').addEventListener('change', e => { state.fiberTarget = Math.max(10, +e.target.value || 32); save(); renderTracker(); renderHeaderStats(); });
+
+document.getElementById('calcToggle').addEventListener('click', () => document.getElementById('calcBox').classList.toggle('open'));
+document.getElementById('calcApply').addEventListener('click', () => {
+  const sex = document.getElementById('calcSex').value;
+  const age = +document.getElementById('calcAge').value;
+  const height = +document.getElementById('calcHeight').value;
+  const weight = +document.getElementById('calcWeight').value;
+  const activity = +document.getElementById('calcActivity').value;
+  const deficit = +document.getElementById('calcPace').value;
+  const bmr = sex==='male' ? (10*weight + 6.25*height - 5*age + 5) : (10*weight + 6.25*height - 5*age - 161);
+  const tdee = bmr * activity;
+  const floor = sex==='male' ? 1500 : 1200;
+  let target = Math.round(tdee - deficit);
+  const warn = target < floor;
+  if (warn) target = floor;
+  document.getElementById('calorieTarget').value = target;
+  state.calorieTarget = target;
+  save(); renderTracker(); renderHeaderStats();
+  const weeklyLoss = (deficit*7/7700).toFixed(2);
+  document.getElementById('calcResult').innerHTML = `Estimated maintenance (TDEE): <strong>${Math.round(tdee)} kcal</strong>. Target set to <strong>${target} kcal/day</strong>` +
+    (warn ? ` (raised to a safe floor — your requested deficit was too aggressive for your stats).` : `.`) +
+    ` At this deficit, expect roughly <strong>${weeklyLoss} kg/week</strong> (~${(weeklyLoss/0.45).toFixed(2)} lb/week) of loss — an estimate, not a guarantee.`;
+});
+
+document.getElementById('resetAllBtn').addEventListener('click', () => {
+  if (confirm('This clears persons, targets, checked meals, swaps, and shopping list progress. Continue?')){
+    localStorage.removeItem(LS_KEY);
+    state = loadState();
+    save();
+    renderAll();
+  }
+});
+
+/* =========================================================
+   NAV / INIT
+========================================================= */
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    if (btn.dataset.view === 'recipes') renderRecipes();
+    if (btn.dataset.view === 'tracker') renderTracker();
+    if (btn.dataset.view === 'settings') renderSettings();
+  });
+});
+
+function renderAll(){
+  renderFilters();
+  renderRecipes();
+  renderWeek();
+  renderSettings();
+}
+renderAll();
+</script>
+</body>
+</html>
