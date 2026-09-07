@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#9b5de5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Unicorn Phonics" />
+  <title>Rainbow Unicorn Phonics Adventure</title>
+  <link rel="manifest" href="./manifest.json" />
+  <style>
+    :root{
+      --ink:#35254f; --muted:#6f6382; --glass:rgba(255,255,255,.84); --line:rgba(108,77,145,.15);
+      --pink:#ff70a6; --purple:#9b5de5; --blue:#4cc9f0; --mint:#71e5b8; --yellow:#ffd166; --peach:#ff9f68;
+      --shadow:0 18px 55px rgba(73,38,111,.16); --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-rounded,"SF Pro Rounded","Avenir Next",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);min-height:100vh;background:
+      radial-gradient(circle at 10% 5%,rgba(255,112,166,.28),transparent 28%),
+      radial-gradient(circle at 88% 12%,rgba(76,201,240,.28),transparent 30%),
+      radial-gradient(circle at 50% 90%,rgba(113,229,184,.24),transparent 30%),
+      linear-gradient(145deg,#fff8fd 0%,#f6f2ff 48%,#eefbff 100%);padding-bottom:90px;overflow-x:hidden}
+    body:before,body:after{content:"";position:fixed;z-index:-1;border-radius:999px;filter:blur(2px);opacity:.55}
+    body:before{width:300px;height:300px;right:-100px;top:34%;background:conic-gradient(from 160deg,var(--pink),var(--yellow),var(--mint),var(--blue),var(--purple),var(--pink));mask:radial-gradient(circle,transparent 50%,#000 52% 64%,transparent 66%)}
+    body:after{width:240px;height:240px;left:-100px;bottom:8%;background:radial-gradient(circle,#fff 0 12%,transparent 13%),radial-gradient(circle at 70% 25%,#fff 0 10%,transparent 11%),radial-gradient(circle at 42% 70%,#fff 0 12%,transparent 13%)}
+    button,input,select,textarea{font:inherit}
+    .shell{max-width:1080px;margin:0 auto;padding:18px}
+    .hero{position:relative;overflow:hidden;padding:24px 22px 28px;border:1px solid rgba(255,255,255,.72);border-radius:32px;background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.68));box-shadow:var(--shadow);backdrop-filter:blur(14px)}
+    .hero:after{content:"🦄";position:absolute;font-size:108px;right:-6px;bottom:-22px;transform:rotate(-8deg);filter:drop-shadow(0 10px 16px rgba(116,66,156,.18));opacity:.95}
+    .eyebrow{display:inline-flex;gap:8px;align-items:center;padding:7px 12px;border-radius:999px;background:linear-gradient(90deg,#fff1f7,#f3efff);font-weight:800;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:#7b4da6}
+    h1{font-size:clamp(31px,7vw,58px);line-height:.96;margin:14px 0 10px;max-width:720px;letter-spacing:-.04em}
+    .rainbow-text{background:linear-gradient(90deg,#ee4d8b,#a64bea,#378ddd,#26aa95,#e5a51a);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p{max-width:690px;margin:0 0 18px;color:var(--muted);font-size:17px;line-height:1.55}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;position:relative;z-index:2}
+    .btn{border:0;border-radius:16px;padding:12px 16px;font-weight:850;cursor:pointer;box-shadow:0 8px 20px rgba(67,41,95,.10);transition:.16s transform,.16s box-shadow;background:white;color:var(--ink)}
+    .btn:active{transform:scale(.98)} .btn.primary{color:white;background:linear-gradient(135deg,var(--purple),var(--pink))}.btn.soft{background:#fff7fb}.btn.mint{background:#e9fff7;color:#17664d}.btn.sm{padding:9px 12px;border-radius:13px;font-size:13px}
+    .floating{position:absolute;pointer-events:none;animation:float 5s ease-in-out infinite}.f1{left:72%;top:14%;font-size:30px}.f2{left:58%;bottom:8%;font-size:24px;animation-delay:-1.3s}.f3{left:85%;top:7%;font-size:21px;animation-delay:-2.2s}
+    @keyframes float{50%{transform:translateY(-10px) rotate(4deg)}}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}.stat{padding:15px;border-radius:20px;background:var(--glass);border:1px solid var(--line);box-shadow:0 8px 26px rgba(74,42,104,.08)}.stat b{font-size:23px;display:block}.stat span{font-size:12px;color:var(--muted);font-weight:700}
+    .nav{position:sticky;top:10px;z-index:20;display:flex;gap:8px;overflow:auto;margin:18px 0;padding:8px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);backdrop-filter:blur(18px);border-radius:22px;box-shadow:0 12px 34px rgba(70,41,99,.10);scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav button{white-space:nowrap;border:0;background:transparent;padding:10px 14px;border-radius:15px;font-weight:800;color:#746987}.nav button.active{background:linear-gradient(135deg,#f0e7ff,#ffe9f2);color:#68439c}
+    .view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--glass);border:1px solid rgba(255,255,255,.9);border-radius:var(--radius);padding:19px;box-shadow:0 12px 34px rgba(72,44,103,.10);backdrop-filter:blur(10px)}
+    .card h2,.card h3{margin-top:0}.card p{line-height:1.55}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#8b6aab;font-weight:900}.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:24px 3px 12px}.section-title h2{margin:0;font-size:25px}.section-title p{margin:0;color:var(--muted);font-size:13px}
+    .path{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.path span{min-height:76px;padding:10px;border-radius:17px;text-align:center;font-size:12px;font-weight:850;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#fff,#f9f5ff);border:1px solid var(--line)}
+    .assessment-card{margin-bottom:12px}.question{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}.question:last-child{border-bottom:0}.qtext{font-weight:780;line-height:1.3}.qsub{font-size:12px;color:var(--muted);margin-top:3px}.score-buttons{display:flex;gap:5px;flex-shrink:0}.score-buttons button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 10px;font-weight:900;color:#746987}.score-buttons button.yes.active{background:#e8fff5;color:#147153;border-color:#93e2c4}.score-buttons button.no.active{background:#fff0f4;color:#b83b67;border-color:#f6abc5}
+    .score-panel{position:sticky;bottom:82px;z-index:15;background:rgba(53,37,79,.94);color:white;border-radius:22px;padding:14px 16px;box-shadow:0 18px 45px rgba(53,37,79,.3);backdrop-filter:blur(12px)}.score-top{display:flex;align-items:center;justify-content:space-between}.score-big{font-size:27px;font-weight:950}.recommend{font-size:13px;color:#eee5fb;margin-top:5px}
+    .progressbar{height:12px;background:#eee7f6;border-radius:999px;overflow:hidden;margin:9px 0}.progressbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));border-radius:999px;transition:width .25s}
+    .lesson-step{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;margin-bottom:12px}.step-num{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#ffe7f0,#eee5ff);font-weight:950;color:#7948a5}.say{background:#f8f3ff;border-left:4px solid var(--purple);padding:12px 14px;border-radius:13px;margin:9px 0;color:#4b3b61;line-height:1.55}.tip{background:#ecfbff;border-left:4px solid var(--blue);padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5}.warning{background:#fff8e8;border-left-color:#f5b942}.checkline{display:flex;gap:10px;align-items:flex-start;margin:8px 0}.checkline input{width:20px;height:20px;accent-color:var(--purple);margin-top:2px}.sound-row{display:flex;flex-wrap:wrap;gap:9px}.sound-chip{min-width:58px;padding:12px;border-radius:16px;text-align:center;background:#fff;border:1px solid var(--line);font-weight:950;font-size:23px}.reward-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.reward{border:0;cursor:pointer;padding:14px 8px;border-radius:18px;background:white;border:1px solid var(--line);box-shadow:0 7px 20px rgba(79,45,111,.07);text-align:center}.reward .emoji{display:block;font-size:34px}.reward b{font-size:12px}.reward.earned{background:linear-gradient(145deg,#fff8cf,#ffe5f2);transform:translateY(-2px)}
+    .tracker-row{display:grid;grid-template-columns:1.2fr .8fr;gap:8px;align-items:center;margin:10px 0}.status-select{width:100%;border:1px solid var(--line);border-radius:13px;padding:10px;background:white;color:var(--ink);font-weight:750}.notes{width:100%;min-height:110px;border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(255,255,255,.9);resize:vertical;color:var(--ink)}
+    .badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;background:#f2ecfb;font-size:12px;font-weight:850;color:#755197}.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.mini{padding:12px;border-radius:15px;background:#fff;border:1px solid var(--line);text-align:center}.mini b{font-size:19px}.muted{color:var(--muted)}
+    .footer{margin:28px 0 10px;text-align:center;color:#7d718c;font-size:12px}.toast{position:fixed;left:50%;bottom:88px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#33254a;color:white;padding:10px 14px;border-radius:999px;font-size:13px;font-weight:800;transition:.25s;z-index:50}.toast.show{opacity:1;transform:translate(-50%,0)}
+    .bottom-bar{display:none}
+    @media(max-width:760px){.shell{padding:12px}.hero{padding:20px 17px 24px}.hero:after{font-size:88px;opacity:.82}.hero p{padding-right:38px;font-size:15px}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.path{grid-template-columns:repeat(2,1fr)}.reward-grid{grid-template-columns:repeat(2,1fr)}.nav{display:none}.bottom-bar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:9px;right:9px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:40;padding:7px;background:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.95);backdrop-filter:blur(18px);border-radius:22px;box-shadow:0 16px 38px rgba(70,41,99,.18)}.bottom-bar button{border:0;background:transparent;border-radius:14px;padding:7px 3px;font-size:10px;font-weight:850;color:#7a7088}.bottom-bar button span{display:block;font-size:20px;margin-bottom:1px}.bottom-bar button.active{background:#f0e8fc;color:#6d3e9c}.score-panel{bottom:86px}.section-title{align-items:flex-start;flex-direction:column}.mini-grid{grid-template-columns:1fr 1fr}.question{align-items:flex-start}.score-buttons button{padding:8px}.floating{display:none}}
+    @media(min-width:761px){.hero{min-height:310px;display:flex;flex-direction:column;justify-content:center}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <span class="eyebrow">🌈 Parent-guided · Ages 5+</span>
+      <h1><span class="rainbow-text">Rainbow Unicorn</span><br/>Phonics Adventure</h1>
+      <p>A playful, mastery-based phonics journey with Luna the Unicorn. Start with a short baseline, teach only what she needs, and build real decoding instead of memorizing words.</p>
+      <div class="hero-actions">
+        <button class="btn primary" onclick="go('baseline')">Start Baseline ✨</button>
+        <button class="btn soft" onclick="go('day1')">Open Day 1 🦄</button>
+      </div>
+      <span class="floating f1">🌈</span><span class="floating f2">⭐</span><span class="floating f3">☁️</span>
+    </section>
+
+    <div class="stats">
+      <div class="stat"><b id="baselineStat">0/33</b><span>Baseline score</span></div>
+      <div class="stat"><b id="starsStat">0</b><span>Magic rewards</span></div>
+      <div class="stat"><b id="lessonStat">0%</b><span>Day 1 complete</span></div>
+      <div class="stat"><b id="stageStat">Start</b><span>Recommended stage</span></div>
+    </div>
+
+    <nav class="nav" aria-label="App sections">
+      <button data-go="home" class="active">🏠 Home</button><button data-go="baseline">🔎 Baseline</button><button data-go="day1">🦄 Day 1</button><button data-go="progress">📈 Progress</button><button data-go="rewards">🌟 Rewards</button>
+    </nav>
+
+    <section id="home" class="view active">
+      <div class="section-title"><h2>Your learning path</h2><p>Move forward only after mastery.</p></div>
+      <div class="card">
+        <div class="path">
+          <span>🔤 Letter sounds</span><span>👂 Hear sounds</span><span>🧩 Oral blending</span><span>👏 Segmenting</span><span>📖 CVC reading</span><span>✏️ CVC spelling</span><span>🍎 Short vowels</span><span>🤝 Digraphs</span><span>🚂 Blends</span><span>💖 Heart words</span><span>💬 Sentences</span><span>📚 Decodable stories</span><span>✨ Fluency</span><span>🌟 Independence</span>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>Week 1 objective</h2><p>Flexible by baseline results.</p></div>
+      <div class="grid">
+        <div class="card"><div class="kicker">Focus</div><h3>Build the sound engine</h3><div class="checkline">👂 <span>Produce a small group of consonant sounds automatically.</span></div><div class="checkline">🍎 <span>Produce short <b>a</b> and <b>i</b>.</span></div><div class="checkline">🔎 <span>Identify the first sound in simple spoken words.</span></div><div class="checkline">🧩 <span>Begin blending 2–3 spoken phonemes.</span></div><div class="checkline">👏 <span>Begin segmenting simple words.</span></div></div>
+        <div class="card"><div class="kicker">Parent rules</div><h3>Keep it playful</h3><p>Keep sessions around <b>15–20 minutes</b>, change activities every few minutes, allow movement, and stop positively if frustration rises.</p><div class="tip">Use pure sounds: <b>/mmmm/</b>, not “muh”; <b>/ssss/</b>, not “suh”; keep /t/ and /p/ short.</div></div>
+      </div>
+
+      <div class="section-title"><h2>Roadmap</h2><p>Approximate, not a deadline.</p></div>
+      <div class="grid">
+        <div class="card"><span class="badge">Weeks 1–4</span><h3>Sounds → blending</h3><p>Baseline, consonant and short-vowel sounds, beginning/ending sounds, oral blending and oral segmenting.</p></div>
+        <div class="card"><span class="badge">Weeks 3–8</span><h3>CVC reading + spelling</h3><p>Connect sounds to written CVC words, spell with movable letters, and strengthen all short-vowel patterns.</p></div>
+        <div class="card"><span class="badge">Weeks 7–14</span><h3>Digraphs + blends</h3><p>Build automatic decoding, add early heart words, then introduce digraphs and initial/final blends.</p></div>
+        <div class="card"><span class="badge">Weeks 12–20+</span><h3>Stories + independence</h3><p>Read decodable sentences and short stories, then increase fluency and independent reading.</p></div>
+      </div>
+    </section>
+
+    <section id="baseline" class="view">
+      <div class="section-title"><h2>🔎 Luna's Baseline Adventure</h2><p>5–10 minutes · do not teach during the check</p></div>
+      <div class="card"><h3>What to say</h3><div class="say">“Luna the Unicorn lost some rainbow crystals! She needs a Sound Detective to help find them. Every sound challenge helps Luna get a crystal back. Want to help?”</div><p class="muted">Give about 3 seconds per answer. If she cannot answer, say: “That's okay. Let's try another one.”</p></div>
+      <div id="assessment"></div>
+      <div class="score-panel"><div class="score-top"><div><div class="score-big"><span id="scoreNow">0</span> / 33</div><div class="recommend" id="recommendation">Complete the sections to find her best starting point.</div></div><button class="btn sm" onclick="resetBaseline()">Reset</button></div><div class="progressbar"><i id="scoreBar"></i></div></div>
+    </section>
+
+    <section id="day1" class="view">
+      <div class="section-title"><h2>🦄 Day 1 — Luna's Missing Rainbow Sounds</h2><p>15–20 minutes</p></div>
+      <div class="card"><div class="kicker">Today's skill</div><h3>/m/, /s/, /t/, /p/, short /a/</h3><p>Hear and produce these sounds, identify beginning sounds, and begin oral blending.</p><div class="sound-row"><span class="sound-chip">m</span><span class="sound-chip">s</span><span class="sound-chip">t</span><span class="sound-chip">p</span><span class="sound-chip">a</span></div></div>
+      <div id="lessonSteps"></div>
+      <div class="card"><div class="kicker">Parent observation</div><h3>How did it go?</h3><div class="tracker-row"><b>Letter sounds m,s,t,p,a</b><select class="status-select observe" data-key="day1-sounds"><option>Not rated</option><option>Mastered</option><option>Developing</option><option>Needs more practice</option></select></div><div class="tracker-row"><b>Beginning sounds</b><select class="status-select observe" data-key="day1-begin"><option>Not rated</option><option>Mastered</option><option>Developing</option><option>Needs more practice</option></select></div><div class="tracker-row"><b>Oral blending</b><select class="status-select observe" data-key="day1-blend"><option>Not rated</option><option>Mastered</option><option>Developing</option><option>Needs more practice</option></select></div><label><b>Parent notes</b><textarea id="day1Notes" class="notes" placeholder="Example: m/s easy, t confused, loved treasure hunt, needed help with mat..."></textarea></label></div>
+    </section>
+
+    <section id="progress" class="view">
+      <div class="section-title"><h2>📈 Progress Tracker</h2><p>Saved on this device</p></div>
+      <div class="card"><p class="muted">Letter recognition and rhyming are already known, so this tracker focuses on actual reading-development skills.</p><div id="tracker"></div></div>
+      <div class="section-title"><h2>Baseline breakdown</h2><p>Individual skill scores matter more than the total.</p></div><div id="breakdown" class="mini-grid"></div>
+    </section>
+
+    <section id="rewards" class="view">
+      <div class="section-title"><h2>🌟 Luna's Rainbow Reward Map</h2><p>Reward effort and learning, not perfection.</p></div>
+      <div class="card"><div id="rewardGrid" class="reward-grid"></div></div>
+      <div class="card" style="margin-top:14px"><h3>Good praise</h3><div class="say">“You listened carefully to every sound.”</div><div class="say">“You kept trying when Luna's sound puzzle was tricky.”</div><div class="say">“You fixed that sound by listening again.”</div></div>
+    </section>
+
+    <div class="footer">🌈 Rainbow Unicorn Phonics Adventure · Progress stays private in this browser</div>
+  </main>
+
+  <nav class="bottom-bar" aria-label="Mobile navigation"><button data-go="home" class="active"><span>🏠</span>Home</button><button data-go="baseline"><span>🔎</span>Baseline</button><button data-go="day1"><span>🦄</span>Day 1</button><button data-go="progress"><span>📈</span>Progress</button><button data-go="rewards"><span>🌟</span>Rewards</button></nav>
+  <div class="toast" id="toast">Saved ✨</div>
+
+<script>
+const groups = [
+  {id:'consonants',title:'A · Letter sounds',max:10,help:'Ask “What sound does this letter make?”',items:[['m','/mmmm/'],['s','/ssss/'],['t','short /t/'],['p','short /p/'],['n','/nnnn/'],['c','/k/'],['f','/ffff/'],['r','/r/'],['l','/llll/'],['h','/h/']]},
+  {id:'vowels',title:'B · Short-vowel sounds',max:5,help:'Ask for the short sound in a word.',items:[['a','/ă/ as in apple'],['i','/ĭ/ as in igloo'],['o','/ŏ/ as in octopus'],['e','/ĕ/ as in egg'],['u','/ŭ/ as in umbrella']]},
+  {id:'begin',title:'C · Beginning sounds',max:3,help:'No letters shown. Ask for the first sound.',items:[['moon','/m/'],['sun','/s/'],['fish','/f/']]},
+  {id:'end',title:'D · Ending sounds',max:3,help:'Ask for the sound at the END.',items:[['cat','/t/'],['map','/p/'],['sun','/n/']]},
+  {id:'blend',title:'E · Oral blending',max:4,help:'No letters. Say sounds like a slow robot.',items:[['/m/ /e/','me'],['/s/ /u/ /n/','sun'],['/m/ /a/ /p/','map'],['/f/ /i/ /sh/','fish']]},
+  {id:'segment',title:'F · Oral segmenting',max:4,help:'Say the whole word; she says every sound.',items:[['me','/m/ /ē/'],['map','/m/ /a/ /p/'],['sun','/s/ /u/ /n/'],['cat','/c/ /a/ /t/']]},
+  {id:'cvc',title:'G · CVC reading',max:4,help:'Only if she handled some blending. No pictures.',items:[['mat','decode'],['sit','decode'],['map','decode'],['cat','decode']]}
+];
+const lesson = [
+  {title:'Magical introduction',mins:'1 min',body:'Tell Luna’s story and invite her to become the Sound Detective.',say:'“Oh no! Luna the Unicorn was flying over Rainbow Valley and five magical sounds fell out of her rainbow bag! These sounds are hiding in our house. Luna needs a Sound Detective. Do you think you can help her?”'},
+  {title:'Sound warm-up',mins:'2–3 min',body:'No letters yet. Find which two spoken words start the same.',say:'“Which two start the same: moon, mouse, sun?” Then try sun/sock/map and pig/pan/tiger.'},
+  {title:'Teach / review',mins:'3–4 min',body:'Show m, s, t, p, a one at a time and model pure sounds.',say:'m = /mmmm/ · s = /ssss/ · t = short /t/ · p = short /p/ · a = /ă/ as in apple',tip:'Avoid adding “uh.” Say /mmmm/, not “muh”; /ssss/, not “suh.”'},
+  {title:'Sound treasure hunt',mins:'4 min',body:'Place or identify objects around the room. She hunts by beginning sound and puts the object beside its sound card.',say:'“Find something beginning with /ssss/.” Then try /mmmm/, /p/, and /t/.'},
+  {title:'Jump to the sound',mins:'3 min',body:'Put m, s, t, p cards on the floor. She jumps to the sound you say.',say:'“Jump to the sound at the beginning of moon.” Then sun, pig, top.'},
+  {title:'Luna talks like a robot',mins:'3 min',body:'Begin oral blending without letters.',say:'Try /ă/ … /t/ → at, /ă/ … /m/ → am, /m/ … /ă/ … /t/ → mat, /s/ … /ă/ … /t/ → sat.',tip:'If needed, stretch continuous sounds: mmmmm-aaaaa-t → mat.'},
+  {title:'Reading / word building',mins:'2–3 min',body:'Only if blending went reasonably well. Lay out m a t, slide a finger under the letters, then change m to s.',say:'“/mmmm/ … /ă/ … /t/. Mmmmm-aaaa-t. Mat.” Then try s-a-t.',tip:'If she guesses from the first letter, say “Let’s point to every sound.”'},
+  {title:'Feed the Unicorn',mins:'1–2 min',body:'Luna only eats words that begin with a target sound.',say:'“Luna only eats /mmmm/ words: moon, sun, map. Which can she eat?” Then try /ssss/: sock, pig, sun.'},
+  {title:'Quick review',mins:'1 min',body:'Five fast prompts: m sound, s sound, first sound in map, first sound in sun, blend /m/ /a/ /t/.',say:'Give about 3 seconds. Record what happened instead of over-helping.'},
+  {title:'Celebration',mins:'1 min',body:'Award a Sound Detective Badge and praise a specific strategy.',say:'“Luna got her first rainbow crystal back because you used your Sound Detective ears!”'},
+  {title:'If she struggles',mins:'as needed',body:'Simplify blending to two sounds, use blocks or a toy unicorn, and finish with something she can do successfully.',say:'“Luna says that’s enough sound magic for today. You earned a Courage Star for trying!”'},
+  {title:'If it is very easy',mins:'1–3 min',body:'Increase thinking, not letter quantity. Try segmenting mat and sat with three blocks.',say:'“Luna can blend sounds now. Can you break MAT apart? Move one block for every sound.”'}
+];
+const skills=['Letter sounds','Beginning sounds','Ending sounds','Middle / short-vowel sounds','Oral blending','Oral segmenting','CVC reading','CVC spelling','Short vowels','Digraphs','Blends','Heart words','Sentence reading','Decodable story reading'];
+const rewards=[['🌈','Rainbow Star'],['💎','Unicorn Gem'],['⭐','Courage Star'],['☁️','Cloud Badge'],['🧩','Blend Builder'],['🔎','Sound Detective'],['🪄','Word Wizard'],['👂','Great Listening'],['💪','Brave Try'],['📖','Reading Spark']];
+let data = JSON.parse(localStorage.getItem('unicornPhonicsData')||'{}');
+data.answers=data.answers||{}; data.steps=data.steps||{}; data.tracker=data.tracker||{}; data.rewards=data.rewards||{}; data.observe=data.observe||{}; data.notes=data.notes||'';
+function save(){localStorage.setItem('unicornPhonicsData',JSON.stringify(data));updateStats();toast();}
+function toast(){const t=document.getElementById('toast');t.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>t.classList.remove('show'),900)}
+function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('active',b.dataset.go===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='progress')renderBreakdown()}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+function renderAssessment(){const host=document.getElementById('assessment');host.innerHTML='';groups.forEach(g=>{const c=document.createElement('div');c.className='card assessment-card';let html=`<div class="kicker">${g.title}</div><h3>${g.help}</h3>`;g.items.forEach((it,i)=>{const key=`${g.id}-${i}`;const val=data.answers[key];html+=`<div class="question"><div><div class="qtext">${escapeHtml(it[0])}</div><div class="qsub">Expected: ${escapeHtml(it[1])}</div></div><div class="score-buttons"><button class="yes ${val===1?'active':''}" onclick="answer('${key}',1)">✓</button><button class="no ${val===0?'active':''}" onclick="answer('${key}',0)">×</button></div></div>`});c.innerHTML=html;host.appendChild(c)});updateScore()}
+function answer(k,v){data.answers[k]=v;localStorage.setItem('unicornPhonicsData',JSON.stringify(data));renderAssessment();updateStats()}
+function groupScore(id){const g=groups.find(x=>x.id===id);let s=0;g.items.forEach((_,i)=>s+=data.answers[`${id}-${i}`]===1?1:0);return s}
+function totalScore(){return groups.reduce((n,g)=>n+groupScore(g.id),0)}
+function stage(){const c=groupScore('consonants'),v=groupScore('vowels'),b=groupScore('blend'),s=groupScore('segment'),r=groupScore('cvc');if(r>=3&&b>=3&&s>=3)return['CVC+','Ready to move beyond basic CVC decoding into spelling, short-vowel contrast and early sentences.'];if(c>=7&&b>=3&&s>=3)return['CVC','Ready to connect strong sound skills to written CVC decoding.'];if(c>=7)return['Sounds','Letter sounds are mostly strong; focus on oral blending and segmenting.'];return['Foundation','Start by strengthening automatic consonant and short-vowel sounds.']}
+function updateScore(){const t=totalScore();document.getElementById('scoreNow').textContent=t;document.getElementById('scoreBar').style.width=(t/33*100)+'%';document.getElementById('recommendation').textContent=stage()[1]}
+function resetBaseline(){if(confirm('Clear all baseline answers?')){data.answers={};save();renderAssessment();renderBreakdown()}}
+function renderLesson(){const host=document.getElementById('lessonSteps');host.innerHTML='';lesson.forEach((s,i)=>{const key='step'+i;const c=document.createElement('div');c.className='card lesson-step';c.innerHTML=`<div class="step-num">${i+1}</div><div><div class="kicker">${s.mins}</div><h3>${s.title}</h3><p>${s.body}</p><div class="say">${s.say}</div>${s.tip?`<div class="tip">${s.tip}</div>`:''}<label class="checkline"><input type="checkbox" ${data.steps[key]?'checked':''} onchange="toggleStep('${key}',this.checked)"><span><b>Done</b> — mark after completing or intentionally skipping this step.</span></label></div>`;host.appendChild(c)})}
+function toggleStep(k,v){data.steps[k]=v;save()}
+function renderTracker(){const h=document.getElementById('tracker');h.innerHTML='';skills.forEach((s,i)=>{const k='skill'+i;const val=data.tracker[k]||'Not Introduced';const row=document.createElement('div');row.className='tracker-row';row.innerHTML=`<b>${s}</b><select class="status-select" onchange="setTrack('${k}',this.value)"><option ${val==='Not Introduced'?'selected':''}>Not Introduced</option><option ${val==='Learning'?'selected':''}>Learning</option><option ${val==='Mostly Knows'?'selected':''}>Mostly Knows</option><option ${val==='Mastered'?'selected':''}>Mastered</option></select>`;h.appendChild(row)})}
+function setTrack(k,v){data.tracker[k]=v;save()}
+function renderRewards(){const h=document.getElementById('rewardGrid');h.innerHTML='';rewards.forEach((r,i)=>{const k='reward'+i;const b=document.createElement('button');b.className='reward '+(data.rewards[k]?'earned':'');b.innerHTML=`<span class="emoji">${r[0]}</span><b>${r[1]}</b>`;b.onclick=()=>{data.rewards[k]=!data.rewards[k];save();renderRewards()};h.appendChild(b)})}
+function renderBreakdown(){const h=document.getElementById('breakdown');h.innerHTML='';groups.forEach(g=>{const d=document.createElement('div');d.className='mini';d.innerHTML=`<b>${groupScore(g.id)}/${g.max}</b><div class="qsub">${g.title.replace(/^[A-G] · /,'')}</div>`;h.appendChild(d)})}
+function updateStats(){const t=totalScore();document.getElementById('baselineStat').textContent=t+'/33';document.getElementById('starsStat').textContent=Object.values(data.rewards).filter(Boolean).length;const done=lesson.filter((_,i)=>data.steps['step'+i]).length;document.getElementById('lessonStat').textContent=Math.round(done/lesson.length*100)+'%';document.getElementById('stageStat').textContent=stage()[0];updateScore()}
+function escapeHtml(v){return String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+document.querySelectorAll('.observe').forEach(s=>{s.value=data.observe[s.dataset.key]||'Not rated';s.addEventListener('change',()=>{data.observe[s.dataset.key]=s.value;save()})});
+const notes=document.getElementById('day1Notes');notes.value=data.notes;notes.addEventListener('input',()=>{data.notes=notes.value;localStorage.setItem('unicornPhonicsData',JSON.stringify(data))});notes.addEventListener('change',toast);
+renderAssessment();renderLesson();renderTracker();renderRewards();renderBreakdown();updateStats();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
